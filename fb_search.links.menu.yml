@@ -1,0 +1,6 @@
+fb_search.admin:
+  title: "Freedmen's Bureau EDAN Search module settings"
+  description: 'Search edan_fb records from drupal.'
+  parent: system.admin_config_development
+  route_name: fb_search.admin_settings
+  weight: 100

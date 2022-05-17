@@ -1,0 +1,15 @@
+type: fb_search
+name: Freedmen's Bureau EDAN Search
+description: 'Search <em>edan_fb</em> records from drupal.'
+help: ''
+new_revision: false
+display_submitted: true
+preview_mode: 1
+status: true
+langcode: en
+dependencies:
+  module:
+    - fb_search
+  enforced:
+    module:
+      - fb_search

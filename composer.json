@@ -1,0 +1,12 @@
+{
+    "name": "drupal/fb_search",
+    "description": "Search edan_fb records from drupal.",
+    "type": "drupal-module",
+    "authors": [
+        {
+            "name": "rbeall-quotient",
+            "email": "rbeall@quotient-inc.com"
+        }
+    ],
+    "require": {}
+}

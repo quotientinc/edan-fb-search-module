@@ -1,0 +1,24 @@
+fb_search.search:
+  path: '/fb-search/{q}/{place}'
+  defaults:
+    _controller: '\Drupal\fb_search\Controller\FBSearchResultsController::content'
+    _title: 'fb search results'
+    q: '*'
+    place: 0
+  requirements:
+    _permission: 'access content'
+fb_search.object:
+  path: '/fb-object/{id}'
+  defaults:
+    _controller: '\Drupal\fb_search\Controller\FBObjectController::content'
+    _title: 'fb object'
+    id: ''
+  requirements:
+    _permission: 'access content'
+fb_search.admin_settings:
+  path: '/admin/config/fb_search/settings'
+  defaults:
+    _form: '\Drupal\fb_search\Form\fb_searchSettingsForm'
+    _title: 'fb_search'
+  requirements:
+    _permission: 'administer site configuration'

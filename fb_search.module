@@ -1,0 +1,23 @@
+<?php
+/**
+ * Implements hook_theme().
+ */
+function fb_search_theme($existing, $type, $theme, $path) {
+  return [
+    'search-results' => [
+      'variables' => [
+        'results' => NULL,
+        'q' => NULL,
+        'place' => NULL,
+        'rows' => NULL
+       ],
+    ],
+    'search-fb' => [
+      'variables' => []
+    ],
+    'display-object' =>[
+      'variables' => ['object' => NULL],
+    ],
+  ];
+}
+?>

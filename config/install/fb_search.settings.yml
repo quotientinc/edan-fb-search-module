@@ -1,0 +1,7 @@
+edan:
+  server: 'https://edan.si.edu/'
+  app_id: ''
+  auth_key: ''
+  tier_type: 2
+  rows: 100
+  facets: true

@@ -1,0 +1,144 @@
+{# fb_search/templates/search-results.html.twig #}
+{{ attach_library('fb_search/fb-search-attachments') }}
+{{ attach_library('fb_search/bootstrap4') }}
+<h1>Freedmen's Bureau Record Search:</h1>
+<script>console.log({{ results | json_encode | raw }});</script>
+<form id="fb-search-form" class="form-inline mb-2">
+<input id="fb-search-field" name="search" class="form-control" value="{% if q != '*' %}{{q}}{% endif %}"/>
+  <button class="btn btn-primary" type="submit">Search</button>
+</form>
+{% if results.rowCount > 0 %}
+  <div class="mb-3">{{results.rowCount}} results found</div>
+{% endif %}
+{% if results.rowCount > rows %}
+<div>
+{% if place < 5 %}
+  {% if place > 0 %}
+    <a class="mx-1" href="/fb-search/{{q}}/0">First</a>
+    <a class="mx-1" href="/fb-search/{{q}}/{{place - 1}}">Prev</a>
+  {% endif %}
+  {% if ((results.rowCount / rows) | round(0, 'ceil')) - 1 < 8 %}
+    {% for i in range(0, ((results.rowCount / rows) | round(0, 'ceil')) - 1) %}
+      {% if i == place %}
+        <span class="mx-1">{{i + 1}}</span>
+      {% else %}
+        <a class="mx-1" href="/fb-search/{{q}}/{{i}}">{{ i + 1 }}</a>
+      {% endif %}
+    {% endfor %}
+  {% else %}
+    {% for i in range(0, 8) %}
+      {% if i == place %}
+        <span class="mx-1">{{i + 1}}</span>
+      {% else %}
+        <a class="mx-1" href="/fb-search/{{q}}/{{i}}">{{ i + 1 }}</a>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+  <a class="mx-1" href="/fb-search/{{q}}/{{place + 1}}">Next</a>
+  <a class="mx-1" href="/fb-search/{{q}}/{{ ((results.rowCount / rows) | round(0, 'ceil')) - 1 }}">Last</a>
+{% elseif place > ((results.rowCount / rows) | round(0, 'ceil')) - 5 %}
+  <a class="mx-1" href="/fb-search/{{q}}/0">First</a>
+  <a class="mx-1" href="/fb-search/{{q}}/{{place - 1}}">Prev</a>
+  {% for i in range((results.rowCount / rows) | round(0, 'ceil') - 9, (results.rowCount / rows)| round(0, 'ceil') - 1) %}
+    {% if i == place %}
+      <span class="mx-1">{{i + 1}}</span>
+    {% else %}
+      <a class="mx-1" href="/fb-search/{{q}}/{{i}}">{{ i + 1 }}</a>
+    {% endif %}
+  {% endfor %}
+  {% if place < (((results.rowCount / rows) | round(0, 'ceil')) - 1) %}
+    <a class="mx-1" href="/fb-search/{{q}}/{{place + 1}}">Next</a>
+    <a class="mx-1" href="/fb-search/{{q}}/{{ ((results.rowCount / rows) | round(0, 'ceil')) - 1 }}">Last</a>
+  {% endif %}
+{% else %}
+  <a class="mx-1" href="/fb-search/{{q}}/0">First</a>
+  <a class="mx-1" href="/fb-search/{{q}}/{{place - 1}}">Prev</a>
+  {% for i in range(place - 4, place + 4) %}
+    {% if i == place %}
+      <span class="mx-1">{{i + 1}}</span>
+    {% else %}
+      <a class="mx-1" href="/fb-search/{{q}}/{{i}}">{{ i + 1 }}</a>
+    {% endif %}
+  {% endfor %}
+  <a class="mx-1" href="/fb-search/{{q}}/{{place + 1}}">Next</a>
+  <a class="mx-1" href="/fb-search/{{q}}/{{ ((results.rowCount / rows) | round(0, 'ceil')) - 1 }}">Last</a>
+{% endif %}
+</div>
+{% endif %}
+
+{% if results.rowCount > 0 %}
+<ul class="list-group">
+    {% for row in results.rows  %}
+      <li class="list-group-item list-group-item-light my-2 border rounded">
+        <div class="mb-3">
+          {% if row.content.image_title %}
+            <a href="/fb-object/{{row.id}}" title="{{row.content.image_title}}">{{ row.content.image_title|length > 100 ? row.content.image_title|slice(0, 100) ~ '...' : row.content.image_title  }}</a>
+          {% else %}
+            <a href="/fb-object/{{row.id}}">{{row.title}}</a>
+          {% endif %}
+          <span class="float-right">{{ row.lastTimeUpdated|date("F jS \\a\\t g:ia") }}</span>
+        </div>
+        <img src="{{row.content.media.thumbnail}}"/>
+
+      </li>
+    {% endfor %}
+</ul>
+{% else %}
+  <p>No results found</p>
+{% endif %}
+
+{% if results.rowCount > rows %}
+<div>
+{% if place < 5 %}
+  {% if place > 0 %}
+    <a class="mx-1" href="/fb-search/{{q}}/0">First</a>
+    <a class="mx-1" href="/fb-search/{{q}}/{{place - 1}}">Prev</a>
+  {% endif %}
+  {% if ((results.rowCount / rows) | round(0, 'ceil')) - 1 < 8 %}
+    {% for i in range(0, ((results.rowCount / rows) | round(0, 'ceil')) - 1) %}
+      {% if i == place %}
+        <span class="mx-1">{{i + 1}}</span>
+      {% else %}
+        <a class="mx-1" href="/fb-search/{{q}}/{{i}}">{{ i + 1 }}</a>
+      {% endif %}
+    {% endfor %}
+  {% else %}
+    {% for i in range(0, 8) %}
+      {% if i == place %}
+        <span class="mx-1">{{i + 1}}</span>
+      {% else %}
+        <a class="mx-1" href="/fb-search/{{q}}/{{i}}">{{ i + 1 }}</a>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+  <a class="mx-1" href="/fb-search/{{q}}/{{place + 1}}">Next</a>
+  <a class="mx-1" href="/fb-search/{{q}}/{{ ((results.rowCount / rows) | round(0, 'ceil')) - 1 }}">Last</a>
+{% elseif place > ((results.rowCount / rows) | round(0, 'ceil')) - 5 %}
+  <a class="mx-1" href="/fb-search/{{q}}/0">First</a>
+  <a class="mx-1" href="/fb-search/{{q}}/{{place - 1}}">Prev</a>
+  {% for i in range((results.rowCount / rows) | round(0, 'ceil') - 9, (results.rowCount / rows)| round(0, 'ceil') - 1) %}
+    {% if i == place %}
+      <span class="mx-1">{{i + 1}}</span>
+    {% else %}
+      <a class="mx-1" href="/fb-search/{{q}}/{{i}}">{{ i + 1 }}</a>
+    {% endif %}
+  {% endfor %}
+  {% if place < (((results.rowCount / rows) | round(0, 'ceil')) - 1) %}
+    <a class="mx-1" href="/fb-search/{{q}}/{{place + 1}}">Next</a>
+    <a class="mx-1" href="/fb-search/{{q}}/{{ ((results.rowCount / rows) | round(0, 'ceil')) - 1 }}">Last</a>
+  {% endif %}
+{% else %}
+  <a class="mx-1" href="/fb-search/{{q}}/0">First</a>
+  <a class="mx-1" href="/fb-search/{{q}}/{{place - 1}}">Prev</a>
+  {% for i in range(place - 4, place + 4) %}
+    {% if i == place %}
+      <span class="mx-1">{{i + 1}}</span>
+    {% else %}
+      <a class="mx-1" href="/fb-search/{{q}}/{{i}}">{{ i + 1 }}</a>
+    {% endif %}
+  {% endfor %}
+  <a class="mx-1" href="/fb-search/{{q}}/{{place + 1}}">Next</a>
+  <a class="mx-1" href="/fb-search/{{q}}/{{ ((results.rowCount / rows) | round(0, 'ceil')) - 1 }}">Last</a>
+{% endif %}
+</div>
+{% endif %}

@@ -1,0 +1,21 @@
+fb-search-attachments:
+  version: 1.x
+  css:
+    theme:
+      css/fb-search.css: {}
+      css/aos.css: {}
+  js:
+    js/aos.js: {}
+    js/fb-search.js: {}
+  dependencies:
+    - core/jquery
+    - core/jquery.once
+bootstrap4:
+ version: 1.0
+ css:
+   base:
+     //stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css: {}
+ js:
+   //stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js: { type: external, minified: true }
+ dependencies:
+   - core/jquery

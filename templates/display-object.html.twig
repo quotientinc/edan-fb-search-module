@@ -1,0 +1,93 @@
+{# fb_search/templates/search-results.html.twig #}
+{{ attach_library('fb_search/fb-search-attachments') }}
+{{ attach_library('fb_search/bootstrap4') }}
+<script>console.log({{ object | json_encode | raw }});</script>
+{% if object %}
+  <div>
+    <h1>{{object.content.image_title}}</h1>
+    <span class="text-muted">{{ object.lastTimeUpdated|date("F jS \\a\\t g:ia") }}</span>
+    {% if object.content.media %}
+    <div>
+      <img src="{{object.content.media.content}}"/>
+    </div>
+  </div>
+  {% endif %}
+  {% if object.content.nara %}
+  <div data-aos="fade-up">
+    <h2>NARA</h2>
+    {% for nara in object.content.nara  %}
+      <div>
+        <h3>{{nara.label}}</h3>
+        <p>{{nara.content}}</p>
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% if object.content.transcription %}
+  <div data-aos="fade-up">
+    <h2>Transcription</h2>
+    <div class="bg-light my-1 p-2">
+    <div>
+      {% if object.content.transcription.pdf_link %}
+        <a href="{{object.content.transcription.pdf_link}}" target="_blank" class="mr-1">PDF</a>
+      {% endif %}
+      {% if object.content.transcription.project_link %}
+        <a href="{{object.content.transcription.project_link}}" target="_blank">Project</a>
+      {% endif %}
+    </div>
+    {% if object.content.transcription.text %}
+      {{object.content.transcription.text}}
+    {% endif %}
+    </div>
+  </div>
+  {% endif %}
+  {% if object.content.indexed_rows %}
+  <div data-aos="fade-up">
+    <h2>Indexed Rows</h2>
+    <ul class="list-group">
+    {% for indexed_row in object.content.indexed_rows %}
+      <li class="list-group-item list-group-light">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-3">
+            {% if indexed_row.name %}
+              <h3>Name</h3>
+              {% for name in indexed_row.name %}
+                <div>{{name.label}}: {{name.content}}</div>
+              {% endfor %}
+            {% endif %}
+          </div>
+          <div class="col-md-3">
+            {% if indexed_row.date %}
+              <h3>Date</h3>
+              {% for date in indexed_row.date %}
+                <div>{{date.label}}: {{date.content}}</div>
+              {% endfor %}
+            {% endif %}
+          </div>
+          <div class="col-md-3">
+            {% if indexed_row.location %}
+              <h3>Location</h3>
+              {% for location in indexed_row.location %}
+                <div>{{location.label}}: {{location.content}}</div>
+              {% endfor %}
+            {% endif %}
+          </div>
+          <div class="col-md-3">
+            {% if indexed_row.misc %}
+              <h3>Miscellaneous</h3>
+              {% for misc in indexed_row.misc %}
+                <div>{{misc.label}}: {{misc.content}}</div>
+              {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      </li>
+    {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+{% else %}
+  <h1>Object not found</h1>
+{% endif %}
