@@ -1,7 +1,7 @@
-edan:
-  server: 'https://edan.si.edu/'
-  app_id: ''
-  auth_key: ''
-  tier_type: 2
+search:
+  fname: 10.0
+  lname: 10.0
+  location: 10.0
+  rtype: 5.0
+display:
   rows: 100
-  facets: true

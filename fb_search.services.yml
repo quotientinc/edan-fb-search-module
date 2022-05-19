@@ -1,0 +1,4 @@
+services:
+  fb_search.request_manager:
+    class: Drupal\fb_search\EDAN\EDANRequestManager
+    arguments: ['@edan.connector']

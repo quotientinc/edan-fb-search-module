@@ -3,81 +3,45 @@
 namespace Drupal\fb_search\EDAN;
 
 use Drupal\fb_search\EDAN\EDANInterface;
-//use Drupal\edan\EdanManagerBase;
+use Drupal\edan\Connector\EdanConnectorService;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class EDANRequestManager
 {
-  private $edan;
   private $rows;
-  private $service;
+  protected $connector;
 
-  public function __construct()
+  public function __construct(EdanConnectorService $edanConnector)
   {
+    $this->connector = $edanConnector;
+
     $fb_config = \Drupal::config('fb_search.settings');
-
-    $server = $fb_config->get('edan.server');
-    $app_id = $fb_config->get('edan.app_id');
-    $auth_key = $fb_config->get('edan.auth_key');
-    $tier_type = $fb_config->get('edan.tier_type');
-
-    $this->edan = new EDANInterface($server, $app_id, $auth_key, $tier_type);
-
-    //$this->service = $fb_config->get('edan.service');
-    $this->rows = $fb_config->get('edan.rows');
+    $this->rows = $fb_config->get('display.rows');
   }
+
+  public static function create(ContainerInterface $container) {
+		 return new static($container->get('edan.connector'));
+	}
 
   public function getNmaahcFBList($q, $start=0)
   {
-    $service = 'metadata/v2.0/metadata/search.htm';
-
-    $info = '';
-
-    $fqs = 'fqs=["type:\"nmaahc_fb\""]';
     $startrows = $start * $this->rows;
-    $uri_string = "rows=$this->rows&start=$startrows&facets=false&q=$q&$fqs";
 
-    $results = $this->edan->sendRequest($uri_string, $service, FALSE, $info);
+    $params = [
+      "rows" => $this->rows,
+      "start" => $startrows,
+      "facets" => false,
+      "q" => $q,
+      "fqs" => '["type:\"nmaahc_fb\""]'
+    ];
 
-    if (is_array($info))
-    {
-      if ($info['http_code'] == 200)
-      {
-        return json_decode($results);
-      }
-      else
-      {
-        return false;
-      }
-    }
-    else
-    {
-      return false;
-    }
+    $results = $this->connector->runParamQuery($params);
+    return $results["data"];
   }
 
   public function getObjectByID($id)
   {
-      $service = 'content/v2.0/content/getContent.htm';
-
-      $info = '';
-      $uri_string = "id=$id";
-
-      $results = $this->edan->sendRequest($uri_string, $service, FALSE, $info);
-
-      if (is_array($info))
-      {
-        if ($info['http_code'] == 200)
-        {
-          return json_decode($results);
-        }
-        else
-        {
-          return false;
-        }
-      }
-      else
-      {
-        return false;
-      }
+    $results = $this->connector->getRecord($id, "id", "nmaahc_fb");
+    return $results["data"];
   }
 }

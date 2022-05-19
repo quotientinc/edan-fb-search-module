@@ -4,7 +4,7 @@ jQuery(function() {
       e.preventDefault();
       let q = jQuery("#fb-field").val();
 
-      let url = "/fb-search/" + escape(q);
+      let url = "/fb-search-search/" + escape(q);
 
       window.location.href=url;
     })

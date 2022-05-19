@@ -38,34 +38,53 @@ class fb_searchSettingsForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config(static::SETTINGS);
 
-    $form['edan_server'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('EDAN Server'),
-      '#default_value' => $config->get('edan.server'),
+    $form['search'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Search Settings'),
+      '#collapsible' => TRUE, // Added
+      '#collapsed' => FALSE,  // Added
+    );
+
+    $form['search']['first_name'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Search boost value for first name'),
+      '#default_value' => $config->get('search.fname'),
+      '#step' => '.1',
     ];
 
-    $form['edan_app_id'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('App ID'),
-      '#default_value' => $config->get('edan.app_id'),
+    $form['search']['last_name'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Search boost value for last name'),
+      '#default_value' => $config->get('search.lname'),
+      '#step' => '.1',
     ];
 
-    $form['edan_auth_key'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Auth Key'),
-      '#default_value' => $config->get('edan.auth_key'),
+    $form['search']['location'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Search boost value for location'),
+      '#default_value' => $config->get('search.location'),
+      '#step' => '.1',
     ];
 
-    $form['edan_tier_type'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Tier Type'),
-      '#default_value' => $config->get('edan.tier_type'),
+    $form['search']['rtype'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Search boost value for record type'),
+      '#default_value' => $config->get('search.rtype'),
+      '#step' => '.1',
     ];
 
-    $form['edan_rows'] = [
-      '#type' => 'textfield',
+    $form['display'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Display Settings'),
+      '#collapsible' => TRUE, // Added
+      '#collapsed' => FALSE,  // Added
+    );
+
+    $form['display']['rows'] = [
+      '#type' => 'number',
       '#title' => $this->t('Rows per page'),
-      '#default_value' => $config->get('edan.rows'),
+      '#default_value' => $config->get('display.rows'),
+      '#step' => '1',
     ];
 
     return parent::buildForm($form, $form_state);
@@ -77,11 +96,11 @@ class fb_searchSettingsForm extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->configFactory->getEditable(static::SETTINGS)
 
-      ->set('edan.server', $form_state->getValue('edan_server'))
-      ->set('edan.app_id', $form_state->getValue('edan_app_id'))
-      ->set('edan.auth_key', $form_state->getValue('edan_auth_key'))
-      ->set('edan.tier_type', $form_state->getValue('edan_tier_type'))
-      ->set('edan.rows', $form_state->getValue('edan_rows'))
+      ->set('search.fname', $form_state->getValue('first_name'))
+      ->set('search.lname', $form_state->getValue('last_name'))
+      ->set('search.location', $form_state->getValue('location'))
+      ->set('search.rtype', $form_state->getValue('rtype'))
+      ->set('display.rows', $form_state->getValue('rows'))
       ->save();
 
     parent::submitForm($form, $form_state);
