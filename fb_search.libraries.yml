@@ -4,8 +4,10 @@ fb-search-attachments:
     theme:
       css/fb-search.css: {}
       css/aos.css: {}
+      css/select2.min.css: {}
   js:
     js/aos.js: {}
+    js/select2.min.js: {}
     js/fb-search.js: {}
   dependencies:
     - core/jquery

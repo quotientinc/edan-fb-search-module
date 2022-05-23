@@ -9,7 +9,8 @@ function fb_search_theme($existing, $type, $theme, $path) {
         'results' => NULL,
         'q' => NULL,
         'place' => NULL,
-        'rows' => NULL
+        'rows' => NULL,
+        'params' => NULL
        ],
     ],
     'search-fb' => [
