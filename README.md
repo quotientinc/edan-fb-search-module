@@ -18,3 +18,6 @@ Download the zip file of the code base and install it under the custom module di
 4. Enter an auth key
 5. Set the tier type (1 or 2)
 6. Configure the number of rows to return on search.
+
+## Use
+Once installed and configured, navigate to the path /fb-search on your site. 
