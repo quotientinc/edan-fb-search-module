@@ -12,6 +12,10 @@
     </div>
   </div>
   {% endif %}
+  {% if object.content.ead_record_link %}
+    <div class="mt-5" data-aos="fade-up"><a href="{{object.content.ead_record_link}}">EAD Record Link</a>
+    </div>
+  {% endif %}
   {% if object.content.nara %}
   <div data-aos="fade-up">
     <h2>NARA</h2>

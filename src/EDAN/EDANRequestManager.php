@@ -37,6 +37,8 @@ class EDANRequestManager
 
     foreach($params as $key => $value)
     {
+      $value = str_replace("*", "", $value);
+      
       switch($key)
       {
         case "fname":
