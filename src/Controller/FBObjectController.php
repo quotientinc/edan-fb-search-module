@@ -35,6 +35,7 @@ class FBObjectController extends ControllerBase {
     return [
       '#theme' => 'display-object',
       '#object' => $results,
+      '#title' => $results["content"]["image_title"],
     ];
   }
 }

@@ -4,7 +4,6 @@
 <script>console.log({{ object | json_encode | raw }});</script>
 {% if object %}
   <div>
-    <h1>{{object.content.image_title}}</h1>
     <span class="text-muted">{{ object.lastTimeUpdated|date("F jS \\a\\t g:ia") }}</span>
     {% if object.content.media %}
     <div>
