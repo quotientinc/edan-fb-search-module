@@ -1,3 +1,10 @@
+fb_search.landing:
+  path: '/fb-landing-page'
+  defaults:
+    _form: '\Drupal\fb_search\Form\LandingPageForm'
+    _title: "Freedmen's Bureau Landing Page"
+  requirements:
+    _permission: 'access content'
 fb_search.search:
   path: '/fb-search/{q}/{place}'
   defaults:

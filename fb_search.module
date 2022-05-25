@@ -13,8 +13,8 @@ function fb_search_theme($existing, $type, $theme, $path) {
         'params' => NULL
        ],
     ],
-    'search-fb' => [
-      'variables' => []
+    'landing-page' => [
+      'render element' => 'form',
     ],
     'display-object' =>[
       'variables' => ['object' => NULL],
