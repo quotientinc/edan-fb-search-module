@@ -6,12 +6,14 @@ function fb_search_theme($existing, $type, $theme, $path) {
   return [
     'search-results' => [
       'variables' => [
+        'response' => NULL,
         'results' => NULL,
         'q' => NULL,
         'place' => NULL,
         'rows' => NULL,
-        'params' => NULL
+        'form' => NULL,
        ],
+      'render element' => 'form',
     ],
     'landing-page' => [
       'render element' => 'form',

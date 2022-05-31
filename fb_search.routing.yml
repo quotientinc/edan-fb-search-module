@@ -6,12 +6,10 @@ fb_search.landing:
   requirements:
     _permission: 'access content'
 fb_search.search:
-  path: '/fb-search/{q}/{place}'
+  path: '/fb-search'
   defaults:
     _controller: '\Drupal\fb_search\Controller\FBSearchResultsController::content'
-    _title: 'fb search results'
-    q: '*'
-    place: 0
+    _title: "Freedmen's Bureau Record Search"
   requirements:
     _permission: 'access content'
 fb_search.object:

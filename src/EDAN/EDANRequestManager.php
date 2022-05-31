@@ -38,7 +38,13 @@ class EDANRequestManager
     foreach($params as $key => $value)
     {
       $value = str_replace("*", "", $value);
-      
+      /*<int name="p.nmaahc_fb.index.event_city">290239</int>
+        <int name="p.nmaahc_fb.index.event_country">588903</int>
+        <int name="p.nmaahc_fb.index.event_county">185066</int>
+        <int name="p.nmaahc_fb.index.event_district">15188</int>
+        <int name="p.nmaahc_fb.index.event_state">556494</int>
+      */
+
       switch($key)
       {
         case "fname":
@@ -62,10 +68,12 @@ class EDANRequestManager
     return json_encode($fqs);
   }
 
-  public function getNmaahcFBList($q, $start=0, $fqs=[], $rows=10)
+  public function getNmaahcFBList($q, $start=0, $fqs=[], $rows=10, $facets=[])
   {
     $fqs = $this->processParams($fqs);
     $startrows = $start * $rows;
+
+    $facets[] = "type:nmaahc_fb";
 
     //\Drupal::logger('fb-search')->notice("$fqs");
 
@@ -74,7 +82,7 @@ class EDANRequestManager
       "start" => $startrows,
       "facets" => false,
       "q" => $q,
-      "fqs" => $fqs
+      "fqs" => $facets
     ];
 
     $results = $this->connector->runParamQuery($params);

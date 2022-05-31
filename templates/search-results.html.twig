@@ -1,143 +1,76 @@
 {# fb_search/templates/search-results.html.twig #}
 {{ attach_library('fb_search/fb-search-attachments') }}
 {{ attach_library('fb_search/bootstrap4') }}
-<h1>Freedmen's Bureau Record Search:</h1>
-<script>console.log({{ results | json_encode | raw }});</script>
-<form id="fb-search-form" class="mb-2">
-  <div class="form-group">
-    <label for="search">Keyword</label>
-    <input id="fb-search-field" name="search" class="form-control" value="{% if q != '*' %}{{q}}{% endif %}"/>
-  </div>
-  <div class="form-group">
-    <label for="fname">First Name</label>
-    <input id="fb-search-fname" name="fname" class="form-control" value="{% if params.fname %}{{params.fname}}{% endif %}"/>
-  </div>
-  <div class="form-group">
-    <label for="lname">Last Name</label>
-    <input id="fb-search-lname" name="lname" class="form-control" value="{% if params.lname %}{{params.lname}}{% endif %}"/>
-  </div>
-  <div class="form-group">
-    <label for="location">Location</label>
-    <input id="fb-search-location" name="location" class="form-control" value="{% if params.location %}{{params.location}}{% endif %}"/>
-  </div>
-  <div class="form-group">
-    <label for="rtype">Record Type</label>
-    <!-- 						<input type="text" id="rtype" name="rtype" /> -->
-    <select name="rtype" id="fb-search-rtype">
-      <option value="" {% if not params.rtype %}selected{% endif %}>All Record Types</option>
-      <option value="M809" {% if params.rtype and params.rtype == "M809" %}selected{% endif %}>Asst. Commissioner – Alabama</option>
-      <option value="M979" {% if params.rtype and params.rtype == "M979" %}selected{% endif %}>Asst. Commissioner – Arkansas</option>
-      <option value="M1055" {% if params.rtype and params.rtype == "M1055" %}selected{% endif %}>Asst. Commissioner – District of Columbia</option>
-      <option value="M798" {% if params.rtype and params.rtype == "M798" %}selected{% endif %}>Asst. Commissioner – Georgia</option>
-      <option value="M1027" {% if params.rtype and params.rtype == "M1027" %}selected{% endif %}>Asst. Commissioner – Louisiana</option>
-      <option value="M1914" {% if params.rtype and params.rtype == "M1914" %}selected{% endif %}>Asst. Commissioner – Mississippi, pre-Bureau</option>
-      <option value="M826" {% if params.rtype and params.rtype == "M826" %}selected{% endif %}>Asst. Commissioner – Mississippi</option>
-      <option value="M843" {% if params.rtype and params.rtype == "M843" %}selected{% endif %}>Asst. Commissioner – North Carolina</option>
-      <option value="M869" {% if params.rtype and params.rtype == "M869" %}selected{% endif %}>Asst. Commissioner – South Carolina</option>
-      <option value="M999" {% if params.rtype and params.rtype == "M999" %}selected{% endif %}>Asst. Commissioner – Tennessee</option>
-      <option value="M821" {% if params.rtype and params.rtype == "M821" %}selected{% endif %}>Asst. Commissioner – Texas</option>
-      <option value="M1048" {% if params.rtype and params.rtype == "M1048" %}selected{% endif %}>Asst. Commissioner – Virginia</option>
-      <option value="M810" {% if params.rtype and params.rtype == "M810" %}selected{% endif %}>Education – Alabama</option>
-      <option value="M0980" {% if params.rtype and params.rtype == "M0980" %}selected{% endif %}>Education – Arkansas</option>
-      <option value="M1056" {% if params.rtype and params.rtype == "M1056" %}selected{% endif %}>Education – District of Columbia</option>
-      <option value="M799" {% if params.rtype and params.rtype == "M799" %}selected{% endif %}>Education – Georgia</option>
-      <option value="M1026" {% if params.rtype and params.rtype == "M1026" %}selected{% endif %}>Education – Louisiana</option>
-      <option value="M844" {% if params.rtype and params.rtype == "M844" %}selected{% endif %}>Education – North Carolina</option>
-      <option value="M1000" {% if params.rtype and params.rtype == "M1000" %}selected{% endif %}>Education – Tennessee</option>
-      <option value="M822" {% if params.rtype and params.rtype == "M822" %}selected{% endif %}>Education – Texas</option>
-      <option value="M1053" {% if params.rtype and params.rtype == "M1053" %}selected{% endif %}>Education – Virginia</option>
-      <option value="M1900" {% if params.rtype and params.rtype == "M1900" %}selected{% endif %}>Field Office – Alabama</option>
-      <option value="M1901" {% if params.rtype and params.rtype == "M1901" %}selected{% endif %}>Field Office – Arkansas</option>
-      <option value="M1902" {% if params.rtype and params.rtype == "M1902" %}selected{% endif %}>Field Office – District of Columbia</option>
-      <option value="M1869" {% if params.rtype and params.rtype == "M1869" %}selected{% endif %}>Field Office – Florida</option>
-      <option value="M1903" {% if params.rtype and params.rtype == "M1903" %}selected{% endif %}>Field Office – Georgia</option>
-      <option value="M1904" {% if params.rtype and params.rtype == "M1904" %}selected{% endif %}>Field Office – Kentucky</option>
-      <option value="M1905" {% if params.rtype and params.rtype == "M1905" %}selected{% endif %}>Field Office – Louisiana</option>
-      <option value="M1483" {% if params.rtype and params.rtype == "M1483" %}selected{% endif %}>Field Office – Louisiana, New Orleans</option>
-      <option value="M1906" {% if params.rtype and params.rtype == "M1906" %}selected{% endif %}>Field Office – Maryland/Delaware</option>
-      <option value="M1907" {% if params.rtype and params.rtype == "M1907" %}selected{% endif %}>Field Office – Mississippi</option>
-      <option value="M1908" {% if params.rtype and params.rtype == "M1908" %}selected{% endif %}>Field Office – Missouri</option>
-      <option value="M1909" {% if params.rtype and params.rtype == "M1909" %}selected{% endif %}>Field Office – North Carolina</option>
-      <option value="M1910" {% if params.rtype and params.rtype == "M1910" %}selected{% endif %}>Field Office – South Carolina</option>
-      <option value="M1911" {% if params.rtype and params.rtype == "M1911" %}selected{% endif %}>Field Office – Tennessee</option>
-      <option value="M1912" {% if params.rtype and params.rtype == "M1912" %}selected{% endif %}>Field Office – Texas</option>
-      <option value="M1913" {% if params.rtype and params.rtype == "M1913" %}selected{% endif %}>Field Office – Virginia</option>
-      <option value="M742" {% if params.rtype and params.rtype == "M742" %}selected{% endif %}>Headquarters – Records</option>
-      <option value="M752" {% if params.rtype and params.rtype == "M752" %}selected{% endif %}>Headquarters – Registers & Letters</option>
-      <option value="M803" {% if params.rtype and params.rtype == "M803" %}selected{% endif %}>Headquarters – Education</option>
-      <option value="M1875" {% if params.rtype and params.rtype == "M1875" %}selected{% endif %}>Headquarters – Marriage </option>
-      <option value="M2029" {% if params.rtype and params.rtype == "M2029" %}selected{% endif %}>Miscellaneous – Adjutant General</option>
-      <option value="M816" {% if params.rtype and params.rtype == "M816" %}selected{% endif %}>Miscellaneous – Freedmen’s Savings and Trust</option>
-    </select>
-  </div>
-  <div class="form-group">
-    <label>Date</label>
-  <span><input type="date" name="start-date" id="fb-search-start-date" min="1770-01-01" max="1970-01-01" value="{% if params.date %}{{params.date[0]}}{% endif %}"/> - <input type="date" name="end-date" id="fb-search-end-date" min="1770-01-01" max="1970-01-01" value="{% if params.date %}{{params.date[1]}}{% endif %}"/></span>
-  </div>
-  <button class="btn btn-primary" type="submit">Search</button>
-</form>
-{% if results.rowCount > 0 %}
-  <div class="mb-3">{{results.rowCount}} results found</div>
+{{ form }}
+
+<!--<h1>Freedmen's Bureau Record Search:</h1>-->
+<script>console.log({{ response.results | json_encode | raw }});</script>
+{% if response.navigation.record_count > 0 %}
+  <div class="mb-3">{{response.navigation.record_count}} results found</div>
 {% endif %}
-{% if results.rowCount > rows %}
+{% if response.navigation.record_count > response.navigation.rows_per_page %}
 <div>
-{% if place < 5 %}
-  {% if place > 0 %}
-    <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/0">First</a>
-    <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/{{place - 1}}">Prev</a>
+{% if response.navigation.current_page < 5 %}
+  {% if response.navigation.current_page > 0 %}
+    <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}0">First</a>
+    <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{response.navigation.current_page - 1}}">Prev</a>
   {% endif %}
-  {% if ((results.rowCount / rows) | round(0, 'ceil')) - 1 < 8 %}
-    {% for i in range(0, ((results.rowCount / rows) | round(0, 'ceil')) - 1) %}
-      {% if i == place %}
+  {% if response.navigation.page_count - 1 < 8 %}
+    {% for i in range(0, response.navigation.page_count - 1) %}
+      {% if i == response.navigation.current_page %}
         <span class="mx-1">{{i + 1}}</span>
       {% else %}
-        <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/{{i}}">{{ i + 1 }}</a>
+        <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{i}}">{{ i + 1 }}</a>
       {% endif %}
     {% endfor %}
   {% else %}
     {% for i in range(0, 8) %}
-      {% if i == place %}
+      {% if i == response.navigation.current_page %}
         <span class="mx-1">{{i + 1}}</span>
       {% else %}
-        <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/{{i}}">{{ i + 1 }}</a>
+        <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{i}}">{{ i + 1 }}</a>
       {% endif %}
     {% endfor %}
   {% endif %}
-  <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/{{place + 1}}">Next</a>
-  <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/{{ ((results.rowCount / rows) | round(0, 'ceil')) - 1 }}">Last</a>
-{% elseif place > ((results.rowCount / rows) | round(0, 'ceil')) - 5 %}
-  <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/0">First</a>
-  <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/{{place - 1}}">Prev</a>
-  {% for i in range((results.rowCount / rows) | round(0, 'ceil') - 9, (results.rowCount / rows)| round(0, 'ceil') - 1) %}
-    {% if i == place %}
+  {% if response.navigation.current_page < (response.navigation.page_count - 1) %}
+    <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{response.navigation.current_page + 1}}">Next</a>
+    <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{ response.navigation.page_count - 1 }}">Last</a>
+  {% endif %}
+{% elseif response.navigation.current_page > response.navigation.page_count - 5 %}
+  <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}0">First</a>
+  <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{response.navigation.current_page - 1}}">Prev</a>
+  {% for i in range(response.navigation.page_count - 9, response.navigation.page_count - 1) %}
+    {% if i == response.navigation.current_page %}
       <span class="mx-1">{{i + 1}}</span>
     {% else %}
-      <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/{{i}}">{{ i + 1 }}</a>
+      <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{i}}">{{ i + 1 }}</a>
     {% endif %}
   {% endfor %}
-  {% if place < (((results.rowCount / rows) | round(0, 'ceil')) - 1) %}
-    <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/{{place + 1}}">Next</a>
-    <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/{{ ((results.rowCount / rows) | round(0, 'ceil')) - 1 }}">Last</a>
+  {% if response.navigation.current_page < (response.navigation.page_count - 1) %}
+    <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{response.navigation.current_page + 1}}">Next</a>
+    <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{ response.navigation.page_count - 1 }}">Last</a>
   {% endif %}
 {% else %}
-  <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/0">First</a>
-  <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/{{place - 1}}">Prev</a>
-  {% for i in range(place - 4, place + 4) %}
-    {% if i == place %}
+  <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}0">First</a>
+  <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{response.navigation.current_page - 1}}">Prev</a>
+  {% for i in range(response.navigation.current_page - 4, response.navigation.current_page + 4) %}
+    {% if i == response.navigation.current_page %}
       <span class="mx-1">{{i + 1}}</span>
     {% else %}
-      <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/{{i}}">{{ i + 1 }}</a>
+      <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{i}}">{{ i + 1 }}</a>
     {% endif %}
   {% endfor %}
-  <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/{{place + 1}}">Next</a>
-  <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/{{ ((results.rowCount / rows) | round(0, 'ceil')) - 1 }}">Last</a>
+  {% if response.navigation.current_page < (response.navigation.page_count - 1) %}
+    <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{response.navigation.current_page + 1}}">Next</a>
+    <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{ response.navigation.page_count - 1 }}">Last</a>
+  {% endif %}
 {% endif %}
 </div>
 {% endif %}
 
-{% if results.rowCount > 0 %}
+{% if response.navigation.record_count > 0 %}
 <ul class="list-group">
-    {% for row in results.rows  %}
+    {% for row in response.results  %}
       <li class="list-group-item list-group-item-light my-2 border rounded">
         <div class="mb-3">
           {% if row.content.image_title %}
@@ -156,58 +89,62 @@
   <p>No results found</p>
 {% endif %}
 
-{% if results.rowCount > rows %}
+{% if response.navigation.record_count > response.navigation.rows_per_page %}
 <div>
-{% if place < 5 %}
-  {% if place > 0 %}
-    <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/0">First</a>
-    <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/{{place - 1}}">Prev</a>
+{% if response.navigation.current_page < 5 %}
+  {% if response.navigation.current_page > 0 %}
+    <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}0">First</a>
+    <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{response.navigation.current_page - 1}}">Prev</a>
   {% endif %}
-  {% if ((results.rowCount / rows) | round(0, 'ceil')) - 1 < 8 %}
-    {% for i in range(0, ((results.rowCount / rows) | round(0, 'ceil')) - 1) %}
-      {% if i == place %}
+  {% if response.navigation.page_count - 1 < 8 %}
+    {% for i in range(0, response.navigation.page_count - 1) %}
+      {% if i == response.navigation.current_page %}
         <span class="mx-1">{{i + 1}}</span>
       {% else %}
-        <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/{{i}}">{{ i + 1 }}</a>
+        <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{i}}">{{ i + 1 }}</a>
       {% endif %}
     {% endfor %}
   {% else %}
     {% for i in range(0, 8) %}
-      {% if i == place %}
+      {% if i == response.navigation.current_page %}
         <span class="mx-1">{{i + 1}}</span>
       {% else %}
-        <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/{{i}}">{{ i + 1 }}</a>
+        <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{i}}">{{ i + 1 }}</a>
       {% endif %}
     {% endfor %}
   {% endif %}
-  <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/{{place + 1}}">Next</a>
-  <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/{{ ((results.rowCount / rows) | round(0, 'ceil')) - 1 }}">Last</a>
-{% elseif place > ((results.rowCount / rows) | round(0, 'ceil')) - 5 %}
-  <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/0">First</a>
-  <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/{{place - 1}}">Prev</a>
-  {% for i in range((results.rowCount / rows) | round(0, 'ceil') - 9, (results.rowCount / rows)| round(0, 'ceil') - 1) %}
-    {% if i == place %}
+  {% if response.navigation.current_page < (response.navigation.page_count - 1) %}
+    <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{response.navigation.current_page + 1}}">Next</a>
+    <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{ response.navigation.page_count - 1 }}">Last</a>
+  {% endif %}
+{% elseif response.navigation.current_page > response.navigation.page_count - 5 %}
+  <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}0">First</a>
+  <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{response.navigation.current_page - 1}}">Prev</a>
+  {% for i in range(response.navigation.page_count - 9, response.navigation.page_count - 1) %}
+    {% if i == response.navigation.current_page %}
       <span class="mx-1">{{i + 1}}</span>
     {% else %}
-      <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/{{i}}">{{ i + 1 }}</a>
+      <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{i}}">{{ i + 1 }}</a>
     {% endif %}
   {% endfor %}
-  {% if place < (((results.rowCount / rows) | round(0, 'ceil')) - 1) %}
-    <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/{{place + 1}}">Next</a>
-    <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/{{ ((results.rowCount / rows) | round(0, 'ceil')) - 1 }}">Last</a>
+  {% if response.navigation.current_page < (response.navigation.page_count - 1) %}
+    <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{response.navigation.current_page + 1}}">Next</a>
+    <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{ response.navigation.page_count - 1 }}">Last</a>
   {% endif %}
 {% else %}
-  <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/0">First</a>
-  <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/{{place - 1}}">Prev</a>
-  {% for i in range(place - 4, place + 4) %}
-    {% if i == place %}
+  <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}0">First</a>
+  <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{response.navigation.current_page - 1}}">Prev</a>
+  {% for i in range(response.navigation.current_page - 4, response.navigation.current_page + 4) %}
+    {% if i == response.navigation.current_page %}
       <span class="mx-1">{{i + 1}}</span>
     {% else %}
-      <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/{{i}}">{{ i + 1 }}</a>
+      <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{i}}">{{ i + 1 }}</a>
     {% endif %}
   {% endfor %}
-  <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/{{place + 1}}">Next</a>
-  <a class="mx-1 fb-nav-link" href="/fb-search/{{q}}/{{ ((results.rowCount / rows) | round(0, 'ceil')) - 1 }}">Last</a>
+  {% if response.navigation.current_page < (response.navigation.page_count - 1) %}
+    <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{response.navigation.current_page + 1}}">Next</a>
+    <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{ response.navigation.page_count - 1 }}">Last</a>
+  {% endif %}
 {% endif %}
 </div>
 {% endif %}
