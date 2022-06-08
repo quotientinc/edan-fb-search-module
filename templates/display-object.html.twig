@@ -2,6 +2,9 @@
 {{ attach_library('fb_search/fb-search-attachments') }}
 {{ attach_library('fb_search/bootstrap4') }}
 <script>console.log({{ object | json_encode | raw }});</script>
+{% if destination %}
+<a href="{{destination}}">Return to Search Results</a>
+{% endif %}
 {% if object %}
   <div>
     <span class="text-muted">{{ object.lastTimeUpdated|date("F jS \\a\\t g:ia") }}</span>
@@ -44,11 +47,60 @@
     </div>
   </div>
   {% endif %}
-  {% if object.content.indexed_rows %}
+
+  {% if object.content.matched_rows and object.content.matched_rows | length > 0%}
+  <div data-aos="fade-up">
+    <h2>Index Rows Matching Search Criteria</h2>
+    <ul class="list-group">
+    {% for matched_row in object.content.matched_rows %}
+      <li class="list-group-item list-group-light">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-3">
+              {% if matched_row.name %}
+                <h3>Name</h3>
+                {% for name in matched_row.name %}
+                <div class="{% if name.matched %}text-success{% endif %}">{{name.label}}: {{name.content}}</div>
+                {% endfor %}
+              {% endif %}
+            </div>
+            <div class="col-md-3">
+              {% if matched_row.date %}
+                <h3>Date</h3>
+                {% for date in matched_row.date %}
+                <div class="{% if date.matched %}text-success{% endif %}">{{date.label}}: {{date.content}}</div>
+                {% endfor %}
+              {% endif %}
+            </div>
+            <div class="col-md-3">
+              {% if matched_row.location %}
+                <h3>Location</h3>
+                {% for location in matched_row.location %}
+                <div class="{% if location.matched %}text-success{% endif %}">{{location.label}}: {{location.content}}</div>
+                {% endfor %}
+              {% endif %}
+            </div>
+            <div class="col-md-3">
+              {% if matched_row.misc %}
+                <h3>Miscellaneous</h3>
+                {% for misc in matched_row.misc %}
+                <div class="{% if misc.matched %}text-success{% endif %}">{{misc.label}}: {{misc.content}}</div>
+                {% endfor %}
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </li>
+    {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  {% if object.content.unmatched_rows and object.content.unmatched_rows | length > 0 %}
   <div data-aos="fade-up">
     <h2>Indexed Rows</h2>
     <ul class="list-group">
-    {% for indexed_row in object.content.indexed_rows %}
+    {% for indexed_row in object.content.unmatched_rows %}
       <li class="list-group-item list-group-light">
       <div class="container">
         <div class="row">
@@ -91,6 +143,4 @@
     </ul>
   </div>
   {% endif %}
-{% else %}
-  <h1>Object not found</h1>
 {% endif %}

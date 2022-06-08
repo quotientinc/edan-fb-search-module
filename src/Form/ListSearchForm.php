@@ -103,6 +103,14 @@ class ListSearchForm extends FormBase {
       )
     );
 
+    $form['occupation'] = array(
+      '#title' => t('Occupation'),
+      '#type' => 'textfield',
+      '#attributes' => array(
+        'class' => array('form-control fb-search-field fb-search-occupation')
+      )
+    );
+
     $rtypes = array(
       "M809" => "Asst. Commissioner – Alabama",
       "M979" => "Asst. Commissioner – Arkansas",
@@ -197,15 +205,6 @@ class ListSearchForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    //\Drupal::logger('fb-search.list.submit')->notice("SUbmitted");
-
-    // Get Boost Values
-    $fb_config = \Drupal::config('fb_search.settings');
-    $this->fname_boost = $fb_config->get('search.fname');
-    $this->lname_boost = $fb_config->get('search.lname');
-    $this->location_boost = $fb_config->get('search.location');
-    $this->rtype_boost = $fb_config->get('search.rtype');
-
     $values = $form_state->getValues();
 
     $q = "*";
@@ -226,17 +225,17 @@ class ListSearchForm extends FormBase {
 
     if(!empty($values['fname']))
     {
-      $fqs[] = "p.nmaahc_fb.pr_name_gn:" . $values['fname'] . "^$this->fname_boost";
+      $fqs[] = "p.nmaahc_fb.pr_name_gn:" . $values['fname'];
     }
 
     if(!empty($values['lname']))
     {
-      $fqs[] = "p.nmaahc_fb.pr_name_surn:" . $values['lname'] . "^$this->lname_boost";
+      $fqs[] = "p.nmaahc_fb.pr_name_surn:" . $values['lname'];
     }
 
     if(!empty($values['location']))
     {
-      $fqs[] = "p.nmaahc_fb.location:" . $values['location'] . "^$this->location_boost";
+      $fqs[] = "p.nmaahc_fb.location:" . $values['location'];
     }
 
     if(!empty($values['country']))
@@ -264,9 +263,14 @@ class ListSearchForm extends FormBase {
       $fqs[] = "p.nmaahc_fb.index.event_city:" . $values['city'];
     }
 
+    if(!empty($values['occupation']))
+    {
+      $fqs[] = "p.nmaahc_fb.index.pr_occupation:" . $values['occupation'];
+    }
+
     if(!empty($values['rtype']))
     {
-      $fqs[] = "p.nmaahc_fb.record_pub_number:" . $values['rtype'] . "^$this->rtype_boost";
+      $fqs[] = "p.nmaahc_fb.record_pub_number:" . $values['rtype'];
     }
 
     $date_set = FALSE;

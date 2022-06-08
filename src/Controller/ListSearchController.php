@@ -12,33 +12,35 @@ use \Drupal\Core\Url;
 /**
  * Defines FBController class.
  */
-class FBSearchResultsController extends ControllerBase {
+class ListSearchController extends ControllerBase {
 
   protected $edanRequestManager;
 
-  public function __construct(EDANRequestManager $edanRequestManager) {
+  public function __construct(EDANRequestManager $edanRequestManager)
+  {
     $this->edanRequestManager = $edanRequestManager;
   }
 
-  public static function create(ContainerInterface $container) {
+  public static function create(ContainerInterface $container)
+  {
     $edanRequestManager = $container->get('fb_search.request_manager');
     return new static($container->get('fb_search.request_manager'));
   }
 
-  private function getURLPrefix($edan_q, $edan_fq)
+  private function getURLPrefix()
   {
+    $query = $this->getQuery();
+
     $path = Url::fromRoute('<current>')->toString();
 
-    $query = [];
-
-    if(!empty(trim($edan_q)) && $edan_q != "*")
+    if(empty(trim($query['edan_q'])) || $query['edan_q'] == "*:*")
     {
-      $query['edan_q'] = $edan_q;
+      unset($query['edan_q']);
     }
 
-    if(!empty($edan_fq))
+    if(empty($query['edan_fq']))
     {
-      $query['edan_fq'] = $edan_fq;
+      unset($query['edan_fq']);
     }
 
     $query_str = http_build_query($query);
@@ -51,36 +53,74 @@ class FBSearchResultsController extends ControllerBase {
     return "$path?page=";
   }
 
-  /**
-   * Display the markup.
-   *
-   * @return array
-   *   Return markup array.
-   */
-  public function content() {
-    $form = \Drupal::formBuilder()->getForm('Drupal\fb_search\Form\ListSearchForm');
-    $query = [];
-
-    $params = [];
-
-    $edan_q = "*";
+  private function getQuery()
+  {
+    $query = array(
+      'edan_q' => '*:*',
+      'edan_fq' => []
+    );
 
     if(\Drupal::request()->query->has('edan_q'))
     {
-      $edan_q = \Drupal::request()->query->get('edan_q');
-      $edan_q = str_replace(" ", "+", urldecode($edan_q));
-      $query['edan_q'] = $edan_q;
-      $form['keyword']['#value'] = $edan_q;
+      $query['edan_q'] = \Drupal::request()->query->get('edan_q');
     }
 
-    $fqs = [];
+    if(\Drupal::request()->query->has('edan_fq'))
+    {
+      $query['edan_fq'] = \Drupal::request()->query->get('edan_fq');
+    }
 
-    $test_var = "";
+    return $query;
+  }
+
+  private function getResponse()
+  {
+    $response = [];
+
+    $response['query'] = $this->getQuery();
+
+    $edan_q = $response['query']['edan_q'];
+    $edan_fq = $response['query']['edan_fq'];
+
+    $page = 0;
+
+    if(\Drupal::request()->query->has('page'))
+    {
+      $page = \Drupal::request()->query->get('page');
+    }
+
+    $fb_config = \Drupal::config('fb_search.settings');
+    $rows = $fb_config->get('display.rows');
+
+    $results = $this->edanRequestManager->getNmaahcFBList($edan_q, $edan_fq, $page, $rows);
+
+    $response['navigation'] = $this->getNavigation($results, $rows, $page);
+
+    $response['results'] = [];
+
+    if(isset($results['rows']))
+    {
+      $response['results'] = $results['rows'];
+    }
+
+    if(isset($results['facets']))
+    {
+      $response['facets'] = $results['facets'];
+    }
+
+    return $response;
+  }
+
+  private function updateForm(&$form)
+  {
+    if(\Drupal::request()->query->has('edan_q') && \Drupal::request()->query->get('edan_q') != '*:*')
+    {
+      $form['keyword']['#value'] = \Drupal::request()->query->get('edan_q');
+    }
 
     if(\Drupal::request()->query->has('edan_fq'))
     {
       $fqs = \Drupal::request()->query->get('edan_fq');
-      $query['edan_fq'] = $fqs;
 
       foreach($fqs as $fq)
       {
@@ -117,6 +157,9 @@ class FBSearchResultsController extends ControllerBase {
           case "p.nmaahc_fb.index.event_city":
             $form['city']['#value'] = $value;
             break;
+          case "p.nmaahc_fb.index.pr_occupation":
+            $form['occupation']['#value'] = $value;
+            break;
           case "p.nmaahc_fb.record_pub_number":
             $form['rtype']['#value'] = $value;
             break;
@@ -127,7 +170,6 @@ class FBSearchResultsController extends ControllerBase {
               $value = str_replace("]", "", $value);
 
               $dates = explode(" TO ", $value);
-              $test_var = json_encode($dates);
 
               $form['date']['start_date']['#value'] = $dates[0];
               $form['date']['end_date']['#value'] = $dates[1];
@@ -141,35 +183,42 @@ class FBSearchResultsController extends ControllerBase {
         }
       }
     }
+  }
 
-    $place = 0;
+  private function getNavigation($results, $rows, $page)
+  {
+    $navigation = array(
+      'rows_per_page' => $rows,
+      'record_count' => 0,
+      'page_count' => 0,
+      'current_page' => $page,
+      'url_prefix' => $this->getURLPrefix()
+    );
 
-    if(\Drupal::request()->query->has('page'))
+    if(isset($results['rowCount']))
     {
-      $place = \Drupal::request()->query->get('page');
+      $navigation['record_count'] = $results['rowCount'];
+      $navigation['page_count'] = ceil($results["rowCount"] / $rows);
     }
 
-    $fb_config = \Drupal::config('fb_search.settings');
-    $rows = $fb_config->get('display.rows');
+    return $navigation;
+  }
 
-    $results = $this->edanRequestManager->getNmaahcFBList($edan_q, $place, $params, $rows, $fqs);
+  /**
+   * Display the markup.
+   *
+   * @return array
+   *   Return markup array.
+   */
+  public function content()
+  {
+    $form = \Drupal::formBuilder()->getForm('Drupal\fb_search\Form\ListSearchForm');
 
-    $response = [];
+    $this->updateForm($form);
 
-    $response['navigation'] = array(
-      'rows_per_page' => $rows,
-      'record_count' => $results['rowCount'],
-      'page_count' => ceil($results["rowCount"] / $rows),
-      'current_page' => $place,
-      'url_prefix' => $this->getURLPrefix($edan_q, $fqs),
-    );
+    $response = $this->getResponse();
 
-    $response['query'] = array(
-      'edan_q' => str_replace("+", " ", $edan_q),
-      'edan_fq' => $fqs,
-    );
-
-    $response['results'] = $results['rows'];
+    //$response['facets'] = json_encode($this->edanRequestManager->getFacets($response['query']['edan_q'], $response['query']['edan_fq']), JSON_PRETTY_PRINT);
 
     \Drupal::service('page_cache_kill_switch')->trigger();
 

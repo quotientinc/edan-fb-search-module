@@ -19,7 +19,7 @@ function fb_search_theme($existing, $type, $theme, $path) {
       'render element' => 'form',
     ],
     'display-object' =>[
-      'variables' => ['object' => NULL],
+      'variables' => ['object' => NULL, 'destination' => NULL],
     ],
   ];
 }

@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Defines FBController class.
  */
-class FBLandingPageController extends ControllerBase {
+class LandingPageController extends ControllerBase {
 
   public function __construct(){}
 

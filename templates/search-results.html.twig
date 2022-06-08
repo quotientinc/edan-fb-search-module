@@ -5,6 +5,7 @@
 
 <!--<h1>Freedmen's Bureau Record Search:</h1>-->
 <script>console.log({{ response.results | json_encode | raw }});</script>
+<script>console.log({{ response.facets | json_encode | raw }});</script>
 {% if response.navigation.record_count > 0 %}
   <div class="mb-3">{{response.navigation.record_count}} results found</div>
 {% endif %}
@@ -74,14 +75,18 @@
       <li class="list-group-item list-group-item-light my-2 border rounded">
         <div class="mb-3">
           {% if row.content.image_title %}
-            <a href="/fb-object/{{row.id}}" title="{{row.content.image_title}}">{{ row.content.image_title|length > 100 ? row.content.image_title|slice(0, 100) ~ '...' : row.content.image_title  }}</a>
+            <a href="/freedmens-bureau/record/{{row.id}}?destination={{response.navigation.url_prefix|url_encode}}{{response.navigation.current_page}}" title="{{row.content.image_title}}">{{ row.content.image_title|length > 100 ? row.content.image_title|slice(0, 100) ~ '...' : row.content.image_title  }}</a>
           {% else %}
-            <a href="/fb-object/{{row.id}}">{{row.title}}</a>
+            <a href="/freedmens-bureau/record/{{row.id}}?destination={{response.navigation.url_prefix|url_encode}}{{response.navigation.current_page}}">{{row.title}}</a>
           {% endif %}
           <span class="float-right">{{ row.lastTimeUpdated|date("F jS \\a\\t g:ia") }}</span>
         </div>
         <img src="{{row.content.media.thumbnail}}"/>
-
+        {% if row.content.matching_row_count > 0 %}
+          <div>{{row.content.matching_row_count}} of {{row.content.indexed_rows | length}} indexed rows match search criteria</div>
+        {% else %}
+          <div>No indexed rows match search criteria</div>
+        {% endif %}
       </li>
     {% endfor %}
 </ul>

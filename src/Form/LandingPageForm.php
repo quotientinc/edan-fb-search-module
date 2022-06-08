@@ -58,7 +58,7 @@ class LandingPageForm extends FormBase {
       $q = $values["search"];
     }
 
-    $form_state->setRedirect('fb_search.search', ['q' => $q, 'place' => 0]);
+    $form_state->setRedirect('fb_search.search', ['edan_q' => $q, 'place' => 0]);
 
     /*$form_state->setRedirect('fb_search.search', [
       'q' => $q,
