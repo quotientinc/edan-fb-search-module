@@ -14,15 +14,15 @@
     <div>
     {% if response.navigation.current_page < 5 %}
       {% if response.navigation.current_page > 0 %}
-        <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}0">First</a>
-        <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{response.navigation.current_page - 1}}">Prev</a>
+        <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page=0">First</a>
+        <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page={{response.navigation.current_page - 1}}">Prev</a>
       {% endif %}
       {% if response.navigation.page_count - 1 < 8 %}
         {% for i in range(0, response.navigation.page_count - 1) %}
           {% if i == response.navigation.current_page %}
             <span class="mx-1">{{i + 1}}</span>
           {% else %}
-            <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{i}}">{{ i + 1 }}</a>
+            <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page={{i}}">{{ i + 1 }}</a>
           {% endif %}
         {% endfor %}
       {% else %}
@@ -30,41 +30,41 @@
           {% if i == response.navigation.current_page %}
             <span class="mx-1">{{i + 1}}</span>
           {% else %}
-            <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{i}}">{{ i + 1 }}</a>
+            <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page={{i}}">{{ i + 1 }}</a>
           {% endif %}
         {% endfor %}
       {% endif %}
       {% if response.navigation.current_page < (response.navigation.page_count - 1) %}
-        <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{response.navigation.current_page + 1}}">Next</a>
-        <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{ response.navigation.page_count - 1 }}">Last</a>
+        <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page={{response.navigation.current_page + 1}}">Next</a>
+        <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page={{ response.navigation.page_count - 1 }}">Last</a>
       {% endif %}
     {% elseif response.navigation.current_page > response.navigation.page_count - 5 %}
-      <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}0">First</a>
-      <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{response.navigation.current_page - 1}}">Prev</a>
+      <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page=0">First</a>
+      <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page={{response.navigation.current_page - 1}}">Prev</a>
       {% for i in range(response.navigation.page_count - 9, response.navigation.page_count - 1) %}
         {% if i == response.navigation.current_page %}
           <span class="mx-1">{{i + 1}}</span>
         {% else %}
-          <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{i}}">{{ i + 1 }}</a>
+          <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page={{i}}">{{ i + 1 }}</a>
         {% endif %}
       {% endfor %}
       {% if response.navigation.current_page < (response.navigation.page_count - 1) %}
-        <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{response.navigation.current_page + 1}}">Next</a>
-        <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{ response.navigation.page_count - 1 }}">Last</a>
+        <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page={{response.navigation.current_page + 1}}">Next</a>
+        <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page={{ response.navigation.page_count - 1 }}">Last</a>
       {% endif %}
     {% else %}
-      <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}0">First</a>
-      <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{response.navigation.current_page - 1}}">Prev</a>
+      <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page=0">First</a>
+      <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page={{response.navigation.current_page - 1}}">Prev</a>
       {% for i in range(response.navigation.current_page - 4, response.navigation.current_page + 4) %}
         {% if i == response.navigation.current_page %}
           <span class="mx-1">{{i + 1}}</span>
         {% else %}
-          <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{i}}">{{ i + 1 }}</a>
+          <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page={{i}}">{{ i + 1 }}</a>
         {% endif %}
       {% endfor %}
       {% if response.navigation.current_page < (response.navigation.page_count - 1) %}
-        <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{response.navigation.current_page + 1}}">Next</a>
-        <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{ response.navigation.page_count - 1 }}">Last</a>
+        <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page={{response.navigation.current_page + 1}}">Next</a>
+        <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page={{ response.navigation.page_count - 1 }}">Last</a>
       {% endif %}
     {% endif %}
     </div>
@@ -99,15 +99,15 @@
     <div>
     {% if response.navigation.current_page < 5 %}
       {% if response.navigation.current_page > 0 %}
-        <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}0">First</a>
-        <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{response.navigation.current_page - 1}}">Prev</a>
+        <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page=0">First</a>
+        <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page={{response.navigation.current_page - 1}}">Prev</a>
       {% endif %}
       {% if response.navigation.page_count - 1 < 8 %}
         {% for i in range(0, response.navigation.page_count - 1) %}
           {% if i == response.navigation.current_page %}
             <span class="mx-1">{{i + 1}}</span>
           {% else %}
-            <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{i}}">{{ i + 1 }}</a>
+            <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page={{i}}">{{ i + 1 }}</a>
           {% endif %}
         {% endfor %}
       {% else %}
@@ -115,41 +115,41 @@
           {% if i == response.navigation.current_page %}
             <span class="mx-1">{{i + 1}}</span>
           {% else %}
-            <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{i}}">{{ i + 1 }}</a>
+            <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page={{i}}">{{ i + 1 }}</a>
           {% endif %}
         {% endfor %}
       {% endif %}
       {% if response.navigation.current_page < (response.navigation.page_count - 1) %}
-        <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{response.navigation.current_page + 1}}">Next</a>
-        <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{ response.navigation.page_count - 1 }}">Last</a>
+        <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page={{response.navigation.current_page + 1}}">Next</a>
+        <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page={{ response.navigation.page_count - 1 }}">Last</a>
       {% endif %}
     {% elseif response.navigation.current_page > response.navigation.page_count - 5 %}
-      <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}0">First</a>
-      <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{response.navigation.current_page - 1}}">Prev</a>
+      <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page=0">First</a>
+      <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page={{response.navigation.current_page - 1}}">Prev</a>
       {% for i in range(response.navigation.page_count - 9, response.navigation.page_count - 1) %}
         {% if i == response.navigation.current_page %}
           <span class="mx-1">{{i + 1}}</span>
         {% else %}
-          <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{i}}">{{ i + 1 }}</a>
+          <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page={{i}}">{{ i + 1 }}</a>
         {% endif %}
       {% endfor %}
       {% if response.navigation.current_page < (response.navigation.page_count - 1) %}
-        <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{response.navigation.current_page + 1}}">Next</a>
-        <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{ response.navigation.page_count - 1 }}">Last</a>
+        <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page={{response.navigation.current_page + 1}}">Next</a>
+        <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page={{ response.navigation.page_count - 1 }}">Last</a>
       {% endif %}
     {% else %}
-      <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}0">First</a>
-      <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{response.navigation.current_page - 1}}">Prev</a>
+      <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page=0">First</a>
+      <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page={{response.navigation.current_page - 1}}">Prev</a>
       {% for i in range(response.navigation.current_page - 4, response.navigation.current_page + 4) %}
         {% if i == response.navigation.current_page %}
           <span class="mx-1">{{i + 1}}</span>
         {% else %}
-          <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{i}}">{{ i + 1 }}</a>
+          <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page={{i}}">{{ i + 1 }}</a>
         {% endif %}
       {% endfor %}
       {% if response.navigation.current_page < (response.navigation.page_count - 1) %}
-        <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{response.navigation.current_page + 1}}">Next</a>
-        <a class="mx-1 fb-nav-link" href="{{response.navigation.url_prefix}}{{ response.navigation.page_count - 1 }}">Last</a>
+        <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page={{response.navigation.current_page + 1}}">Next</a>
+        <a class="mx-1 fb-nav-link" href="{{ response.navigation.url_prefix }}&page={{ response.navigation.page_count - 1 }}">Last</a>
       {% endif %}
     {% endif %}
     </div>

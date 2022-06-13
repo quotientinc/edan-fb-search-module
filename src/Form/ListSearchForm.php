@@ -62,14 +62,6 @@ class ListSearchForm extends FormBase {
       )
     );
 
-    $form['country'] = array(
-      '#title' => t('Country'),
-      '#type' => 'textfield',
-      '#attributes' => array(
-        'class' => array('form-control fb-search-field fb-search-country')
-      )
-    );
-
     $form['state'] = array(
       '#title' => t('State'),
       '#type' => 'textfield',
@@ -86,27 +78,11 @@ class ListSearchForm extends FormBase {
       )
     );
 
-    $form['district'] = array(
-      '#title' => t('District'),
-      '#type' => 'textfield',
-      '#attributes' => array(
-        'class' => array('form-control fb-search-field fb-search-district')
-      )
-    );
-
     $form['city'] = array(
       '#title' => t('City'),
       '#type' => 'textfield',
       '#attributes' => array(
         'class' => array('form-control fb-search-field fb-search-city')
-      )
-    );
-
-    $form['occupation'] = array(
-      '#title' => t('Occupation'),
-      '#type' => 'textfield',
-      '#attributes' => array(
-        'class' => array('form-control fb-search-field fb-search-occupation')
       )
     );
 
@@ -237,11 +213,6 @@ class ListSearchForm extends FormBase {
       $fqs[] = "p.nmaahc_fb.location:" . $values['location'];
     }
 
-    if(!empty($values['country']))
-    {
-      $fqs[] = "p.nmaahc_fb.index.event_country:" . $values['country'];
-    }
-
     if(!empty($values['state']))
     {
       $fqs[] = "p.nmaahc_fb.index.event_state:" . $values['state'];
@@ -252,19 +223,9 @@ class ListSearchForm extends FormBase {
       $fqs[] = "p.nmaahc_fb.index.event_county:" . $values['county'];
     }
 
-    if(!empty($values['district']))
-    {
-      $fqs[] = "p.nmaahc_fb.index.event_district:" . $values['district'];
-    }
-
     if(!empty($values['city']))
     {
       $fqs[] = "p.nmaahc_fb.index.event_city:" . $values['city'];
-    }
-
-    if(!empty($values['occupation']))
-    {
-      $fqs[] = "p.nmaahc_fb.index.pr_occupation:" . $values['occupation'];
     }
 
     if(!empty($values['rtype']))

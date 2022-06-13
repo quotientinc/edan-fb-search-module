@@ -47,10 +47,10 @@ class ListSearchController extends ControllerBase {
 
     if(!empty(trim($query_str)))
     {
-      return "$path?$query_str&page=";
+      return "$path?$query_str";
     }
 
-    return "$path?page=";
+    return "$path?";
   }
 
   private function getQuery()

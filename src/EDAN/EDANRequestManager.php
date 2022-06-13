@@ -55,23 +55,14 @@ class EDANRequestManager
         case 'p.nmaahc_fb.location':
           $mapping['location'][] = ['field' => '', 'value' => $value];
           break;
-        case 'p.nmaahc_fb.index.event_country':
-          $mapping['location'][] = ['field' => 'Country', 'value' => $value];
-          break;
         case 'p.nmaahc_fb.index.event_state':
           $mapping['location'][] = ['field' => 'State', 'value' => $value];
           break;
         case 'p.nmaahc_fb.index.event_county':
           $mapping['location'][] = ['field' => 'County', 'value' => $value];
           break;
-        case 'p.nmaahc_fb.index.event_district':
-          $mapping['location'][] = ['field' => 'District', 'value' => $value];
-          break;
         case 'p.nmaahc_fb.index.event_city':
           $mapping['location'][] = ['field' => 'City', 'value' => $value];
-          break;
-        case 'p.nmaahc_fb.index.pr_occupation':
-          $mapping['misc'][] = ['field' => 'Occupation', 'value' => $value];
           break;
         case 'p.nmaahc_fb.index.search_date':
           $mapping['date'][] = ['field' => 'Display Date', 'value' => $value];
@@ -111,7 +102,10 @@ class EDANRequestManager
 
     if($date_arr)
     {
-      return strtotime($date_arr['year'] . "-" . $date_arr['month'] . "-" . $date_arr['day']);
+      $year = $date_arr['year'];
+      $month = $date_arr['month'] ? $date_arr['month'] : '01';
+      $day = $date_arr['day'] ? $date_arr['day'] : '01';
+      return strtotime($year . "-" . $month . "-" . $day);
     }
 
     return FALSE;
@@ -136,7 +130,6 @@ class EDANRequestManager
     return $fq_date == $column_date;
   }
 
-  //fbs-1647632055567-1647632225948-0
   private function parseFqDate($date)
   {
     $date = str_replace(']', '', str_replace('[', '', $date));
