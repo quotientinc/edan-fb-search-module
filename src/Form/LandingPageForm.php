@@ -25,8 +25,32 @@ class LandingPageForm extends FormBase {
     $form['search'] = array(
       '#type' => 'search',
       '#attributes' => array(
-        'placeholder' => t("Search Freedmen's Bureau Records"),
-        'class' => array('form-control fb-search-keyword')
+        'placeholder' => t("Search by keyword"),
+        'class' => array('form-control fb-search-field fb-search-keyword')
+      )
+    );
+
+    $form['location'] = array(
+      '#type' => 'textfield',
+      '#attributes' => array(
+        'placeholder' => t("Search by location"),
+        'class' => array('form-control fb-search-field fb-search-location')
+      )
+    );
+
+    $form['fname'] = array(
+      '#type' => 'textfield',
+      '#attributes' => array(
+        'placeholder' => t("Search by first name"),
+        'class' => array('form-control fb-search-field fb-search-fname')
+      )
+    );
+
+    $form['lname'] = array(
+      '#type' => 'textfield',
+      '#attributes' => array(
+        'placeholder' => t("Search by last name"),
+        'class' => array('form-control fb-search-field fb-search-lname')
       )
     );
 
@@ -51,20 +75,38 @@ class LandingPageForm extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
 
-    $q = "*";
+    $query = ['place' => 0];
+
+    $q = "*:*";
+    $fqs = [];
 
     if(!empty($values["search"]))
     {
       $q = $values["search"];
+      $query['edan_q'] = $q;
     }
 
-    $form_state->setRedirect('fb_search.search', ['edan_q' => $q, 'place' => 0]);
+    if(!empty($values['fname']))
+    {
+      $fqs[] = "p.nmaahc_fb.pr_name_gn:" . $values['fname'];
+    }
 
-    /*$form_state->setRedirect('fb_search.search', [
-      'q' => $q,
-      'place' => 0
-    ],
-    ['query' => array("fname" => "Robert")]);*/
+    if(!empty($values['lname']))
+    {
+      $fqs[] = "p.nmaahc_fb.pr_name_surn:" . $values['lname'];
+    }
+
+    if(!empty($values['location']))
+    {
+      $fqs[] = "p.nmaahc_fb.location:" . $values['location'];
+    }
+
+    if(!empty($fqs))
+    {
+      $query['edan_fq'] = $fqs;
+    }
+
+    $form_state->setRedirect('fb_search.search', $query);
 
     return;
   }

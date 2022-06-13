@@ -47,10 +47,10 @@ class EDANRequestManager
       switch($key)
       {
         case 'p.nmaahc_fb.pr_name_gn':
-          $mapping['name'][] = ['field' => 'First Name', 'value' => $value];
+          $mapping['name'][] = ['field' => 'given_name', 'value' => $value];
           break;
         case 'p.nmaahc_fb.pr_name_surn':
-          $mapping['name'][] = ['field' => 'Last Name', 'value' => $value];
+          $mapping['name'][] = ['field' => 'surn_name', 'value' => $value];
           break;
         case 'p.nmaahc_fb.location':
           $mapping['location'][] = ['field' => '', 'value' => $value];
@@ -212,7 +212,7 @@ class EDANRequestManager
     return FALSE;
   }
 
-  private function matchField($row, $column_name, $value, $field_name = '')
+  private function matchField(&$row, $column_name, $value, $field_name = '')
   {
     if(!isset($row[$column_name]))
     {
@@ -221,15 +221,83 @@ class EDANRequestManager
 
     $column = $row[$column_name];
 
-    foreach($column as $c)
+    $match = FALSE;
+
+    for($i = 0; $i < count($row[$column_name]); $i++)
     {
-      if(($c['label'] == $field_name || empty($field_name)) && trim($value) == trim($c['content']))
+      if(trim($value) == trim($row[$column_name][$i]['content']))
       {
-        return TRUE;
+        $match = TRUE;
+        $row[$column_name][$i]['matched'] = TRUE;
       }
     }
 
-    return FALSE;
+    return $match;
+  }
+
+  private function matchName(&$row, $value, $field)
+  {
+    if(!isset($row['name']))
+    {
+      return FALSE;
+    }
+
+    $match = FALSE;
+
+    for($i = 0; $i < count($row['name']); $i++)
+    {
+      if(isset($row['name'][$i][$field]) && trim($row['name'][$i][$field]) == trim($value))
+      {
+        $match = TRUE;
+        $row['name'][$i]['matched'] = TRUE;
+      }
+    }
+
+    return $match;
+  }
+
+  private function matchLocationField(&$row, $value)
+  {
+    $row['location_match_method_hit'] = TRUE;
+    $value = str_replace(',', ' ', $value);
+    $locations = explode(' ', $value);
+    $row['locations'] = $locations;
+
+    if(!isset($row['location']))
+    {
+        return FALSE;
+    }
+
+    $match = TRUE;
+
+    foreach($locations as $location)
+    {
+      $lmatch = FALSE;
+
+      for($i = 0; $i < count($row['location']); $i++)
+      {
+        if(trim($location) == trim($row['location'][$i]['content']))
+        {
+          $lmatch = TRUE;
+        }
+      }
+
+      $match = $match && $lmatch;
+    }
+
+    $row['location_matched'] = $match;
+
+    //$row['location']['location_match_set'] = $location_match_set;
+
+    if($match)
+    {
+      for($i = 0; $i < count($row['location']); $i++)
+      {
+        $row['location'][$i]['matched'] = TRUE;
+      }
+    }
+
+    return $match;
   }
 
   private function getSearchMatchCounts(&$results, $fqs)
@@ -270,8 +338,23 @@ class EDANRequestManager
 
             if($column == 'date')
             {
-              $results['data']['rows'][$i]['content']['date_match'][] = ['row' => $idx, 'fq' => $value, 'success' => $this->matchDateField($idx, $value)];
               if($this->matchDateField($idx, $value))
+              {
+                $row_matches = TRUE;
+                break;
+              }
+            }
+            elseif($column == 'name')
+            {
+              if($this->matchName($idx, $value, $name))
+              {
+                $row_matches = TRUE;
+                break;
+              }
+            }
+            elseif($column == 'location' && empty(trim($name)))
+            {
+              if($this->matchLocationField($idx, $value))
               {
                 $row_matches = TRUE;
                 break;
@@ -279,7 +362,6 @@ class EDANRequestManager
             }
             else
             {
-              $results['data']['rows'][$i]['content']['date_match'][] = NULL;
               if($this->matchField($idx, $column, $value, $name))
               {
                 $row_matches = TRUE;
@@ -334,21 +416,20 @@ class EDANRequestManager
               }
             }
           }
-          else
+          elseif($column == 'name' && $this->matchName($row, $value, $name))
           {
-            if($this->matchField($row, $column, $value, $name))
-            {
-              $row_matches = TRUE;
-
-              for($i = 0; $i < count($row[$column]); $i++)
-              {
-                $entry = $row[$column][$i];
-                if(empty($name) || $entry['label'] == $name)
-                {
-                  $row[$column][$i]['matched'] = TRUE;
-                }
-              }
-            }
+            $row_matches = TRUE;
+            //$row_matches = $row_matches || $this->matchName($row, $value, $name);
+          }
+          elseif($column == 'location' && $name == '' && $this->matchLocationField($row, $value))
+          {
+            $row_matches = TRUE;
+            /*$row_matches = $row_matches || $this->matchLocationField($row, $value);
+            $row['row_matches'] = $row_matches;*/
+          }
+          elseif($this->matchField($row, $column, $value, $name))
+          {
+            $row_matches = TRUE;
           }
         }
       }

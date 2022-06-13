@@ -26,7 +26,6 @@ class ListSearchForm extends FormBase {
       '#title' => t('Keyword'),
       '#type' => 'search',
       '#attributes' => array(
-        'placeholder' => t("Search Freedmen's Bureau Records"),
         'class' => array('form-control fb-search-field fb-search-keyword')
       )
     );
