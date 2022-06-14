@@ -14,13 +14,21 @@ class EDANInterface {
   private $app_id;
   private $edan_key;
 
-  /**
-   * int
+  /*
+   * Authentication modes for EDAN.
    * 0 for unsigned/trusted/T1 requests;
    * 1 for signed/T2 requests;
    * 2 for password based (unused)
    */
-  private $auth_type = 1;
+  private const AUTH_T1_UNSIGNED = 0;
+  private const AUTH_T2_SIGNED   = 1;
+  private const AUTH_PASSWORD    = 2;
+
+  /**
+   * @var int $auth_type
+   * Is one of the following: AUTH_T1_UNSIGNED | AUTH_T2_SIGNED | AUTH_PASSWORD
+   */
+  private $auth_type = self::AUTH_T2_SIGNED;
 
   /**
    * Bool tracks whether the request was successful based on response header (200 = success)
@@ -32,14 +40,14 @@ class EDANInterface {
   /**
    * Constructor
    */
-  public function __construct($server, $app_id, $edan_key, $auth_type = 1) {
+  public function __construct($server, $app_id, $edan_key, $auth_type = self::AUTH_T2_SIGNED) {
     $this->server = $server;
     $this->app_id = $app_id;
     $this->edan_key = $edan_key;
 
     // Normalize, but don't cast
-    if ($auth_type == 0 || $auth_type == '0') {
-      $this->auth_type = 0;
+    if ($auth_type === 0 || $auth_type === '0') {
+      $this->auth_type = self::AUTH_T1_UNSIGNED;
     }
   }
 
@@ -60,7 +68,7 @@ class EDANInterface {
     );
 
     // For signed/T2 requests
-    if ($this->auth_type === 1) {
+    if ($this->auth_type === self::AUTH_T2_SIGNED) {
       $auth = "{$ipnonce}\n{$uri}\n{$date}\n{$this->edan_key}";
       $content = base64_encode(sha1($auth));
       $return[] = 'X-Nonce: ' . $ipnonce;
@@ -72,12 +80,19 @@ class EDANInterface {
 
   /**
    * Perform a curl request
-   * @param args An associative array that can contain {q,fq,rows,start}
-   * @param service The service name you are curling {metadataService,tagService,collectService}
-   * @param POST boolean, defaults to false; on true $uri sent CURLOPT_POSTFIELDS
-   * @param info reference, if passed will be set with the output of curl_getinfo
+   * @param array $uri
+   *  An associative array that can contain {q,fq,rows,start}
+   * @param string $service
+   *  The service name you are curling {metadataService,tagService,collectService}
+   * @param bool $POST boolean
+   *  Defaults to false; on true $uri sent CURLOPT_POSTFIELDS
+   * @param array $info
+   *  Reference, if passed will be set with the output of curl_getinfo
+   *
+   * @return string|bool
+   *  Returns the EDAN response, or FALSE if it there was an error.
    */
-  public function sendRequest($uri, $service, $POST = FALSE, &$info) {
+  public function sendRequest($uri, $service, $POST = FALSE, &$info = []) {
     $ch = curl_init();
 
     if ($POST === TRUE) {
@@ -127,7 +142,7 @@ class EDANInterface {
     $i = 0;
 
     while ($i < $length) {
-      $char = substr($possible, mt_rand(0, strlen($possible)-1), 1);
+      $char = $possible[mt_rand(0, strlen($possible) - 1)];
 
       if (!strstr($password, $char)) {
         $password .= $char;
@@ -138,4 +153,3 @@ class EDANInterface {
     return $prefix.$password;
   }
 }
-?>

@@ -18,12 +18,12 @@ class LandingPageController extends ControllerBase {
   }
 
   /**
-   * Display the markup.
+   * Display the markup. Disables page caching for this page.
    *
    * @return array
    *   Return markup array.
    */
-  public function content()
+  public function content(): array
   {
     \Drupal::service('page_cache_kill_switch')->trigger();
 

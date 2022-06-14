@@ -23,22 +23,21 @@ class ListSearchController extends ControllerBase {
 
   public static function create(ContainerInterface $container)
   {
-    $edanRequestManager = $container->get('fb_search.request_manager');
     return new static($container->get('fb_search.request_manager'));
   }
 
-  private function getURLPrefix()
+  private function getURLPrefix(): string
   {
     $query = $this->getQuery();
 
     $path = Url::fromRoute('<current>')->toString();
 
-    if(empty(trim($query['edan_q'])) || $query['edan_q'] == "*:*")
+    if(empty(trim($query['edan_q'])) || $query['edan_q'] === "*:*")
     {
       unset($query['edan_q']);
     }
 
-    if(empty($query['edan_fq']))
+    if(empty(trim($query['edan_fq'])))
     {
       unset($query['edan_fq']);
     }
@@ -53,7 +52,7 @@ class ListSearchController extends ControllerBase {
     return "$path?";
   }
 
-  private function getQuery()
+  private function getQuery(): array
   {
     $query = array(
       'edan_q' => '*:*',
@@ -73,7 +72,7 @@ class ListSearchController extends ControllerBase {
     return $query;
   }
 
-  private function getResponse()
+  private function getResponse(): array
   {
     $response = [];
 
@@ -84,7 +83,7 @@ class ListSearchController extends ControllerBase {
 
     $page = 0;
 
-    if(\Drupal::request()->query->has('page'))
+    if (\Drupal::request()->query->has('page'))
     {
       $page = \Drupal::request()->query->get('page');
     }
@@ -96,12 +95,7 @@ class ListSearchController extends ControllerBase {
 
     $response['navigation'] = $this->getNavigation($results, $rows, $page);
 
-    $response['results'] = [];
-
-    if(isset($results['rows']))
-    {
-      $response['results'] = $results['rows'];
-    }
+    $response['results'] = $results['rows'] ?? [];
 
     if(isset($results['facets']))
     {
@@ -111,9 +105,9 @@ class ListSearchController extends ControllerBase {
     return $response;
   }
 
-  private function updateForm(&$form)
+  private function updateForm(&$form): void
   {
-    if(\Drupal::request()->query->has('edan_q') && \Drupal::request()->query->get('edan_q') != '*:*')
+    if(\Drupal::request()->query->has('edan_q') && \Drupal::request()->query->get('edan_q') !== '*:*')
     {
       $form['keyword']['#value'] = \Drupal::request()->query->get('edan_q');
     }
@@ -166,8 +160,7 @@ class ListSearchController extends ControllerBase {
           case "p.nmaahc_fb.index.search_date":
             if(strpos($value, "TO") !== false)
             {
-              $value = str_replace("[", "", $value);
-              $value = str_replace("]", "", $value);
+              $value = str_replace(array("[", "]"), "", $value);
 
               $dates = explode(" TO ", $value);
 

@@ -17,7 +17,7 @@ class EDANRequestManager
 
   public static function create(ContainerInterface $container) {
 		 return new static($container->get('edan.connector'));
-	}
+  }
 
   private function parseFqsArray($fqs)
   {
@@ -212,13 +212,11 @@ class EDANRequestManager
         return FALSE;
     }
 
-    $column = $row[$column_name];
-
     $match = FALSE;
 
     for($i = 0; $i < count($row[$column_name]); $i++)
     {
-      if(trim($value) == trim($row[$column_name][$i]['content']))
+      if(trim($value) === trim($row[$column_name][$i]['content']))
       {
         $match = TRUE;
         $row[$column_name][$i]['matched'] = TRUE;
@@ -239,7 +237,7 @@ class EDANRequestManager
 
     for($i = 0; $i < count($row['name']); $i++)
     {
-      if(isset($row['name'][$i][$field]) && trim($row['name'][$i][$field]) == trim($value))
+      if(isset($row['name'][$i][$field]) && trim($row['name'][$i][$field]) === trim($value))
       {
         $match = TRUE;
         $row['name'][$i]['matched'] = TRUE;
@@ -269,7 +267,7 @@ class EDANRequestManager
 
       for($i = 0; $i < count($row['location']); $i++)
       {
-        if(trim($location) == trim($row['location'][$i]['content']))
+        if(trim($location) === trim($row['location'][$i]['content']))
         {
           $lmatch = TRUE;
         }
@@ -329,7 +327,7 @@ class EDANRequestManager
             $value = $field['value'];
             $name = $field['field'];
 
-            if($column == 'date')
+            if($column === 'date')
             {
               if($this->matchDateField($idx, $value))
               {
@@ -337,7 +335,7 @@ class EDANRequestManager
                 break;
               }
             }
-            elseif($column == 'name')
+            elseif($column === 'name')
             {
               if($this->matchName($idx, $value, $name))
               {
@@ -345,7 +343,7 @@ class EDANRequestManager
                 break;
               }
             }
-            elseif($column == 'location' && empty(trim($name)))
+            elseif($column === 'location' && empty(trim($name)))
             {
               if($this->matchLocationField($idx, $value))
               {
@@ -392,7 +390,7 @@ class EDANRequestManager
           $name = $field['field'];
           $value = $field['value'];
 
-          if($column == 'date')
+          if($column === 'date')
           {
             if($this->matchDateField($row, $value))
             {
@@ -409,12 +407,12 @@ class EDANRequestManager
               }
             }
           }
-          elseif($column == 'name' && $this->matchName($row, $value, $name))
+          elseif($column === 'name' && $this->matchName($row, $value, $name))
           {
             $row_matches = TRUE;
             //$row_matches = $row_matches || $this->matchName($row, $value, $name);
           }
-          elseif($column == 'location' && $name == '' && $this->matchLocationField($row, $value))
+          elseif($column === 'location' && $name === '' && $this->matchLocationField($row, $value))
           {
             $row_matches = TRUE;
             /*$row_matches = $row_matches || $this->matchLocationField($row, $value);
