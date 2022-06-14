@@ -25,7 +25,7 @@ class LandingPageForm extends FormBase {
     $form['search'] = array(
       '#type' => 'search',
       '#attributes' => array(
-        'placeholder' => t("Search by keyword"),
+        'placeholder' => $this->t("Search by keyword"),
         'class' => array('form-control fb-search-field fb-search-keyword')
       )
     );
@@ -33,7 +33,7 @@ class LandingPageForm extends FormBase {
     $form['location'] = array(
       '#type' => 'textfield',
       '#attributes' => array(
-        'placeholder' => t("Search by location"),
+        'placeholder' => $this->t("Search by location"),
         'class' => array('form-control fb-search-field fb-search-location')
       )
     );
@@ -41,7 +41,7 @@ class LandingPageForm extends FormBase {
     $form['fname'] = array(
       '#type' => 'textfield',
       '#attributes' => array(
-        'placeholder' => t("Search by first name"),
+        'placeholder' => $this->t("Search by first name"),
         'class' => array('form-control fb-search-field fb-search-fname')
       )
     );
@@ -49,7 +49,7 @@ class LandingPageForm extends FormBase {
     $form['lname'] = array(
       '#type' => 'textfield',
       '#attributes' => array(
-        'placeholder' => t("Search by last name"),
+        'placeholder' => $this->t("Search by last name"),
         'class' => array('form-control fb-search-field fb-search-lname')
       )
     );
@@ -65,6 +65,13 @@ class LandingPageForm extends FormBase {
     );
 
     $form['#theme'] = 'landing-page';
+
+    $form['#attached'] = [
+        'library' => [
+            'fb_search/fb-search-attachments',
+            'fb_search/bootstrap4'
+        ]
+    ];
 
     return $form;
   }

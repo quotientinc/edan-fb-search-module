@@ -22,18 +22,14 @@ class RecordController extends ControllerBase {
     return new static($container->get('fb_search.request_manager'));
   }
 
-  public function getQuery()
+  public function getQuery(): array
   {
     if(\Drupal::request()->query->has('destination'))
     {
       $query_str = parse_url(\Drupal::request()->query->get('destination'), PHP_URL_QUERY);
       $query = [];
       parse_str($query_str, $query);
-
-      if(isset($query['edan_fq']))
-      {
-        return $query['edan_fq'];
-      }
+      return $query['edan_fq'] ?? [];
     }
 
     return [];
@@ -41,14 +37,16 @@ class RecordController extends ControllerBase {
 
   /**
    * Display the markup.
+   * @param mixed $id
+   *   Remote identifier for EDAN object.
    *
    * @return array
    *   Return markup array.
    */
-  public function content($id) {
+  public function content($id): array {
     $results = $this->edanRequestManager->getObjectByID($id, $this->getQuery());
 
-    $title = isset($results['content']['image_title']) ? $results['content']['image_title'] : "Object Not Found";
+    $title = $results['content']['image_title'] ?? "Object Not Found";
 
     $destination = NULL;
 

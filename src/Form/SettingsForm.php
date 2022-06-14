@@ -40,7 +40,7 @@ class SettingsForm extends ConfigFormBase {
 
     $form['display'] = array(
       '#type' => 'fieldset',
-      '#title' => t('Display Settings'),
+      '#title' => $this->t('Display Settings'),
       '#collapsible' => TRUE, // Added
       '#collapsed' => FALSE,  // Added
     );

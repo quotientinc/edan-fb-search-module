@@ -6,6 +6,7 @@
 namespace Drupal\fb_search\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+
 class ListSearchForm extends FormBase {
   /**
    * {@inheritdoc}
@@ -23,7 +24,7 @@ class ListSearchForm extends FormBase {
     $form['#attributes']['class'][] = 'fb-search-list-search-form';
 
     $form['keyword'] = array(
-      '#title' => t('Keyword'),
+      '#title' => $this->t('Keyword'),
       '#type' => 'search',
       '#attributes' => array(
         'class' => array('form-control fb-search-field fb-search-keyword')
@@ -32,14 +33,14 @@ class ListSearchForm extends FormBase {
 
     $form['transcription'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Only show records with transcription data.'),
+      '#title' => $this->t('Only show records with transcription data.'),
       '#attributes' => array(
         'class' => array('fb-search-checkbox fb-search-transcription')
       )
     );
 
     $form['fname'] = array(
-      '#title' => t('First Name'),
+      '#title' => $this->t('First Name'),
       '#type' => 'textfield',
       '#attributes' => array(
         'class' => array('form-control fb-search-field fb-search-fname')
@@ -47,7 +48,7 @@ class ListSearchForm extends FormBase {
     );
 
     $form['lname'] = array(
-      '#title' => t('Last Name'),
+      '#title' => $this->t('Last Name'),
       '#type' => 'textfield',
       '#attributes' => array(
         'class' => array('form-control fb-search-field fb-search-lname')
@@ -55,7 +56,7 @@ class ListSearchForm extends FormBase {
     );
 
     $form['location'] = array(
-      '#title' => t('Location'),
+      '#title' => $this->t('Location'),
       '#type' => 'textfield',
       '#attributes' => array(
         'class' => array('form-control fb-search-field fb-search-lname')
@@ -63,7 +64,7 @@ class ListSearchForm extends FormBase {
     );
 
     $form['state'] = array(
-      '#title' => t('State'),
+      '#title' => $this->t('State'),
       '#type' => 'textfield',
       '#attributes' => array(
         'class' => array('form-control fb-search-field fb-search-state')
@@ -71,7 +72,7 @@ class ListSearchForm extends FormBase {
     );
 
     $form['county'] = array(
-      '#title' => t('County'),
+      '#title' => $this->t('County'),
       '#type' => 'textfield',
       '#attributes' => array(
         'class' => array('form-control fb-search-field fb-search-county')
@@ -79,7 +80,7 @@ class ListSearchForm extends FormBase {
     );
 
     $form['city'] = array(
-      '#title' => t('City'),
+      '#title' => $this->t('City'),
       '#type' => 'textfield',
       '#attributes' => array(
         'class' => array('form-control fb-search-field fb-search-city')
@@ -198,39 +199,21 @@ class ListSearchForm extends FormBase {
       $fqs[] = "p.nmaahc_fb.index.content.transasset.projectid:*";
     }
 
-    if(!empty($values['fname']))
-    {
-      $fqs[] = "p.nmaahc_fb.pr_name_gn:" . $values['fname'];
-    }
 
-    if(!empty($values['lname']))
-    {
-      $fqs[] = "p.nmaahc_fb.pr_name_surn:" . $values['lname'];
-    }
+    $filters = [
+        'fname'  => 'p.nmaahc_fb.pr_name_gn:',
+        'lname'  => 'p.nmaahc_fb.pr_name_surn:',
+        'location' => 'p.nmaahc_fb.location:',
+        'state'  => 'p.nmaahc_fb.index.event_state:',
+        'county' => 'p.nmaahc_fb.index.event_county:',
+        'city'   => 'p.nmaahc_fb.index.event_city:',
+        'rtype'  => 'p.nmaahc_fb.record_pub_number:',
+    ];
 
-    if(!empty($values['location']))
-    {
-      $fqs[] = "p.nmaahc_fb.location:" . $values['location'];
-    }
-
-    if(!empty($values['state']))
-    {
-      $fqs[] = "p.nmaahc_fb.index.event_state:" . $values['state'];
-    }
-
-    if(!empty($values['county']))
-    {
-      $fqs[] = "p.nmaahc_fb.index.event_county:" . $values['county'];
-    }
-
-    if(!empty($values['city']))
-    {
-      $fqs[] = "p.nmaahc_fb.index.event_city:" . $values['city'];
-    }
-
-    if(!empty($values['rtype']))
-    {
-      $fqs[] = "p.nmaahc_fb.record_pub_number:" . $values['rtype'];
+    foreach ($filters as $key => $filter) {
+        if (!empty($values[$key])) {
+            $fqs[] = $filter . $values[$key];
+        }
     }
 
     $date_set = FALSE;
@@ -249,7 +232,5 @@ class ListSearchForm extends FormBase {
     $query['edan_fq'] = $fqs;
 
     $form_state->setRedirect('fb_search.search', [], ['query' => $query]);
-
-    return;
   }
 }
