@@ -134,9 +134,9 @@ class ListSearchForm extends FormBase {
 
     $form['rtype'] = [
       '#type' => 'select',
-      '#title' => $this->t('Select Record Type'),
+      '#title' => $this->t('Select Publication'),
       '#options' => $rtypes,
-      "#empty_option" => $this->t('All Record Types'),
+      "#empty_option" => $this->t('All Publications'),
       "#empty_value" => "",
       '#attributes' => array(
         'class' => array('fb-search-field fb-search-rtype')

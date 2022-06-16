@@ -76,11 +76,10 @@
           <li class="list-group-item list-group-item-light my-2 border rounded">
             <div class="mb-3">
               {% if row.content.image_title %}
-                <a href="/freedmens-bureau/record/{{row.id}}?destination={{response.navigation.url_prefix|url_encode}}{{response.navigation.current_page}}" title="{{row.content.image_title}}">{{ row.content.image_title|length > 100 ? row.content.image_title|slice(0, 100) ~ '...' : row.content.image_title  }}</a>
+                <a href="/freedmens-bureau/record/{{row.id}}?destination={{response.navigation.url_prefix|url_encode}}&page={{response.navigation.current_page}}" title="{{row.content.image_title}}">{{ row.content.image_title|length > 100 ? row.content.image_title|slice(0, 100) ~ '...' : row.content.image_title  }}</a>
               {% else %}
-                <a href="/freedmens-bureau/record/{{row.id}}?destination={{response.navigation.url_prefix|url_encode}}{{response.navigation.current_page}}">{{row.title}}</a>
+                <a href="/freedmens-bureau/record/{{row.id}}?destination={{response.navigation.url_prefix|url_encode}}&page={{response.navigation.current_page}}">{{row.title}}</a>
               {% endif %}
-              <span class="float-right">{{ row.lastTimeUpdated|date("F jS \\a\\t g:ia") }}</span>
             </div>
             <img src="{{row.content.media.thumbnail}}"/>
             {% if row.content.matching_row_count > 0 %}

@@ -467,7 +467,8 @@ class EDANRequestManager
       "facet" => "true",
       "facet.field" => $fields,
       "facet.sort" => "count",
-      "facet.limit" => "-1"
+      "facet.limit" => "100",
+      "includePrivate" => "true",
     ];
 
     $results = $this->connector->runParamQuery($params);
