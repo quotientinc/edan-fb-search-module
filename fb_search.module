@@ -1,4 +1,9 @@
 <?php
+
+/**
+ * @file
+ */
+
 /**
  * Implements hook_theme().
  */
@@ -12,15 +17,14 @@ function fb_search_theme($existing, $type, $theme, $path) {
         'place' => NULL,
         'rows' => NULL,
         'form' => NULL,
-       ],
+      ],
       'render element' => 'form',
     ],
     'landing-page' => [
       'render element' => 'form',
     ],
-    'display-object' =>[
+    'display-object' => [
       'variables' => ['object' => NULL, 'destination' => NULL],
     ],
   ];
 }
-?>

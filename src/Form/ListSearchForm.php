@@ -1,93 +1,93 @@
 <?php
-/**
- * @file
- * Contains \Drupal\fb_search\Form\ListSearchForm.
- */
+
 namespace Drupal\fb_search\Form;
+
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 
+/**
+ *
+ */
 class ListSearchForm extends FormBase {
+
   /**
    * {@inheritdoc}
    */
-  public function getFormId()
-  {
+  public function getFormId() {
     return 'list_search_form';
   }
 
   /**
-  * {@inheritdoc}
-  */
-  public function buildForm(array $form, FormStateInterface $form_state)
-  {
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state) {
     $form['#attributes']['class'][] = 'fb-search-list-search-form';
 
-    $form['keyword'] = array(
+    $form['keyword'] = [
       '#title' => $this->t('Keyword'),
       '#type' => 'search',
-      '#attributes' => array(
-        'class' => array('form-control fb-search-field fb-search-keyword')
-      )
-    );
+      '#attributes' => [
+        'class' => ['form-control fb-search-field fb-search-keyword'],
+      ],
+    ];
 
-    $form['transcription'] = array(
+    $form['transcription'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Only show records with transcription data.'),
-      '#attributes' => array(
-        'class' => array('fb-search-checkbox fb-search-transcription')
-      )
-    );
+      '#attributes' => [
+        'class' => ['fb-search-checkbox fb-search-transcription'],
+      ],
+    ];
 
-    $form['fname'] = array(
+    $form['fname'] = [
       '#title' => $this->t('First Name'),
       '#type' => 'textfield',
-      '#attributes' => array(
-        'class' => array('form-control fb-search-field fb-search-fname')
-      )
-    );
+      '#attributes' => [
+        'class' => ['form-control fb-search-field fb-search-fname'],
+      ],
+    ];
 
-    $form['lname'] = array(
+    $form['lname'] = [
       '#title' => $this->t('Last Name'),
       '#type' => 'textfield',
-      '#attributes' => array(
-        'class' => array('form-control fb-search-field fb-search-lname')
-      )
-    );
+      '#attributes' => [
+        'class' => ['form-control fb-search-field fb-search-lname'],
+      ],
+    ];
 
-    $form['location'] = array(
+    $form['location'] = [
       '#title' => $this->t('Location'),
       '#type' => 'textfield',
-      '#attributes' => array(
-        'class' => array('form-control fb-search-field fb-search-lname')
-      )
-    );
+      '#attributes' => [
+        'class' => ['form-control fb-search-field fb-search-lname'],
+      ],
+    ];
 
-    $form['state'] = array(
+    $form['state'] = [
       '#title' => $this->t('State'),
       '#type' => 'textfield',
-      '#attributes' => array(
-        'class' => array('form-control fb-search-field fb-search-state')
-      )
-    );
+      '#attributes' => [
+        'class' => ['form-control fb-search-field fb-search-state'],
+      ],
+    ];
 
-    $form['county'] = array(
+    $form['county'] = [
       '#title' => $this->t('County'),
       '#type' => 'textfield',
-      '#attributes' => array(
-        'class' => array('form-control fb-search-field fb-search-county')
-      )
-    );
+      '#attributes' => [
+        'class' => ['form-control fb-search-field fb-search-county'],
+      ],
+    ];
 
-    $form['city'] = array(
+    $form['city'] = [
       '#title' => $this->t('City'),
       '#type' => 'textfield',
-      '#attributes' => array(
-        'class' => array('form-control fb-search-field fb-search-city')
-      )
-    );
+      '#attributes' => [
+        'class' => ['form-control fb-search-field fb-search-city'],
+      ],
+    ];
 
-    $rtypes = array(
+    $rtypes = [
       "M809" => "Asst. Commissioner – Alabama",
       "M979" => "Asst. Commissioner – Arkansas",
       "M1055" => "Asst. Commissioner – District of Columbia",
@@ -131,7 +131,7 @@ class ListSearchForm extends FormBase {
       "M1875" => "Headquarters – Marriage ",
       "M2029" => "Miscellaneous – Adjutant General",
       "M816" => "Miscellaneous – Freedmen’s Savings and Trust",
-    );
+    ];
 
     $form['rtype'] = [
       '#type' => 'select',
@@ -139,9 +139,9 @@ class ListSearchForm extends FormBase {
       '#options' => $rtypes,
       "#empty_option" => $this->t('All Record Types'),
       "#empty_value" => "",
-      '#attributes' => array(
-        'class' => array('fb-search-field fb-search-rtype')
-      )
+      '#attributes' => [
+        'class' => ['fb-search-field fb-search-rtype'],
+      ],
     ];
 
     $form['single_date'] = [
@@ -152,9 +152,9 @@ class ListSearchForm extends FormBase {
     $form['date'] = [
       '#type' => 'fieldset',
       '#title' => 'Date Range',
-      '#attributes' => array(
-        'class' => array("fb-search-fieldset fb-search-dates")
-      )
+      '#attributes' => [
+        'class' => ["fb-search-fieldset fb-search-dates"],
+      ],
     ];
 
     $form['date']['start_date'] = [
@@ -168,11 +168,11 @@ class ListSearchForm extends FormBase {
     ];
 
     $form['actions']['#type'] = 'actions';
-    $form['actions']['submit'] = array(
-     '#type' => 'submit',
-     '#value' => $this->t('Search'),
-     '#button_type' => 'primary'
-    );
+    $form['actions']['submit'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Search'),
+      '#button_type' => 'primary',
+    ];
 
     return $form;
   }
@@ -188,44 +188,39 @@ class ListSearchForm extends FormBase {
 
     $fqs = [];
 
-    if(!empty($values['keyword']))
-    {
+    if (!empty($values['keyword'])) {
       $q = $values['keyword'];
       $query['edan_q'] = $q;
     }
 
-    if(!empty($values['transcription']) && $values['transcription'])
-    {
+    if (!empty($values['transcription']) && $values['transcription']) {
       $fqs[] = "p.nmaahc_fb.index.content.transasset.projectid:*";
     }
 
-
     $filters = [
-        'fname'  => 'p.nmaahc_fb.pr_name_gn:',
-        'lname'  => 'p.nmaahc_fb.pr_name_surn:',
-        'location' => 'p.nmaahc_fb.location:',
-        'state'  => 'p.nmaahc_fb.index.event_state:',
-        'county' => 'p.nmaahc_fb.index.event_county:',
-        'city'   => 'p.nmaahc_fb.index.event_city:',
-        'rtype'  => 'p.nmaahc_fb.record_pub_number:',
+      'fname'  => 'p.nmaahc_fb.pr_name_gn:',
+      'lname'  => 'p.nmaahc_fb.pr_name_surn:',
+      'location' => 'p.nmaahc_fb.location:',
+      'state'  => 'p.nmaahc_fb.index.event_state:',
+      'county' => 'p.nmaahc_fb.index.event_county:',
+      'city'   => 'p.nmaahc_fb.index.event_city:',
+      'rtype'  => 'p.nmaahc_fb.record_pub_number:',
     ];
 
     foreach ($filters as $key => $filter) {
-        if (!empty($values[$key])) {
-            $fqs[] = $filter . $values[$key];
-        }
+      if (!empty($values[$key])) {
+        $fqs[] = $filter . $values[$key];
+      }
     }
 
     $date_set = FALSE;
 
-    if(!empty($values['single_date']))
-    {
+    if (!empty($values['single_date'])) {
       $date_set = TRUE;
       $fqs[] = "p.nmaahc_fb.index.search_date:" . $values['single_date'];
     }
 
-    if(!$date_set && !empty($values['start_date']) && !empty($values['end_date']))
-    {
+    if (!$date_set && !empty($values['start_date']) && !empty($values['end_date'])) {
       $fqs[] = "p.nmaahc_fb.index.search_date:[" . $values['start_date'] . " TO " . $values['end_date'] . "]";
     }
 
@@ -233,4 +228,5 @@ class ListSearchForm extends FormBase {
 
     $form_state->setRedirect('fb_search.search', [], ['query' => $query]);
   }
+
 }

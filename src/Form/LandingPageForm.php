@@ -1,76 +1,77 @@
 <?php
-/**
- * @file
- * Contains \Drupal\fb_search\Form\LandingPageForm.
- */
+
 namespace Drupal\fb_search\Form;
+
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+
+/**
+ *
+ */
 class LandingPageForm extends FormBase {
+
   /**
    * {@inheritdoc}
    */
-  public function getFormId()
-  {
+  public function getFormId() {
     return 'landing_page_form';
   }
 
   /**
-  * {@inheritdoc}
-  */
-  public function buildForm(array $form, FormStateInterface $form_state)
-  {
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state) {
     $form['#attributes']['class'][] = 'fb-search-landing-page-form';
 
-    $form['search'] = array(
+    $form['search'] = [
       '#type' => 'search',
-      '#attributes' => array(
+      '#attributes' => [
         'placeholder' => $this->t("Search by keyword"),
-        'class' => array('form-control fb-search-field fb-search-keyword')
-      )
-    );
+        'class' => ['form-control fb-search-field fb-search-keyword'],
+      ],
+    ];
 
-    $form['location'] = array(
+    $form['location'] = [
       '#type' => 'textfield',
-      '#attributes' => array(
+      '#attributes' => [
         'placeholder' => $this->t("Search by location"),
-        'class' => array('form-control fb-search-field fb-search-location')
-      )
-    );
+        'class' => ['form-control fb-search-field fb-search-location'],
+      ],
+    ];
 
-    $form['fname'] = array(
+    $form['fname'] = [
       '#type' => 'textfield',
-      '#attributes' => array(
+      '#attributes' => [
         'placeholder' => $this->t("Search by first name"),
-        'class' => array('form-control fb-search-field fb-search-fname')
-      )
-    );
+        'class' => ['form-control fb-search-field fb-search-fname'],
+      ],
+    ];
 
-    $form['lname'] = array(
+    $form['lname'] = [
       '#type' => 'textfield',
-      '#attributes' => array(
+      '#attributes' => [
         'placeholder' => $this->t("Search by last name"),
-        'class' => array('form-control fb-search-field fb-search-lname')
-      )
-    );
+        'class' => ['form-control fb-search-field fb-search-lname'],
+      ],
+    ];
 
     $form['actions']['#type'] = 'actions';
-    $form['actions']['submit'] = array(
-     '#type' => 'submit',
-     '#value' => $this->t('Save'),
-     '#button_type' => 'primary',
-     '#attributes' => array(
-       'style' => array('display: none;')
-     ),
-    );
+    $form['actions']['submit'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Save'),
+      '#button_type' => 'primary',
+      '#attributes' => [
+        'style' => ['display: none;'],
+      ],
+    ];
 
     $form['#theme'] = 'landing-page';
 
     $form['#attached'] = [
-        'library' => [
-            'fb_search/fb-search-attachments',
-            'fb_search/bootstrap4'
-        ]
+      'library' => [
+        'fb_search/fb-search-attachments',
+        'fb_search/bootstrap4',
+      ],
     ];
 
     return $form;
@@ -87,29 +88,24 @@ class LandingPageForm extends FormBase {
     $q = "*:*";
     $fqs = [];
 
-    if(!empty($values["search"]))
-    {
+    if (!empty($values["search"])) {
       $q = $values["search"];
       $query['edan_q'] = $q;
     }
 
-    if(!empty($values['fname']))
-    {
+    if (!empty($values['fname'])) {
       $fqs[] = "p.nmaahc_fb.pr_name_gn:" . $values['fname'];
     }
 
-    if(!empty($values['lname']))
-    {
+    if (!empty($values['lname'])) {
       $fqs[] = "p.nmaahc_fb.pr_name_surn:" . $values['lname'];
     }
 
-    if(!empty($values['location']))
-    {
+    if (!empty($values['location'])) {
       $fqs[] = "p.nmaahc_fb.location:" . $values['location'];
     }
 
-    if(!empty($fqs))
-    {
+    if (!empty($fqs)) {
       $query['edan_fq'] = $fqs;
     }
 
@@ -117,4 +113,5 @@ class LandingPageForm extends FormBase {
 
     return;
   }
+
 }
