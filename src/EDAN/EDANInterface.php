@@ -1,14 +1,10 @@
 <?php
 
-/**
- * EDANInterface
- *
- * @version 0.10.1 - Updated signing, added X-AppVersion, deprecated unused members:
- *   metadataQuery(), tagQuery(), listQuery(), isValid(), $results,
- */
-
 namespace Drupal\fb_search\EDAN;
 
+/**
+ *
+ */
 class EDANInterface {
   private $server;
   private $app_id;
@@ -25,7 +21,7 @@ class EDANInterface {
   private const AUTH_PASSWORD    = 2;
 
   /**
-   * @var int $auth_type
+   * @var int
    * Is one of the following: AUTH_T1_UNSIGNED | AUTH_T2_SIGNED | AUTH_PASSWORD
    */
   private $auth_type = self::AUTH_T2_SIGNED;
@@ -38,14 +34,14 @@ class EDANInterface {
   public $result_format = 'json';
 
   /**
-   * Constructor
+   * Constructor.
    */
   public function __construct($server, $app_id, $edan_key, $auth_type = self::AUTH_T2_SIGNED) {
     $this->server = $server;
     $this->app_id = $app_id;
     $this->edan_key = $edan_key;
 
-    // Normalize, but don't cast
+    // Normalize, but don't cast.
     if ($auth_type === 0 || $auth_type === '0') {
       $this->auth_type = self::AUTH_T1_UNSIGNED;
     }
@@ -54,20 +50,23 @@ class EDANInterface {
   /**
    * Creates the header for the request to EDAN. Takes $uri, prepends a nonce, and appends
    * the date and appID key. Hashes as sha1() and base64_encode() the result.
+   *
    * @param uri The URI (string) to be hashed and encoded.
+   *
    * @returns Array containing all the elements and signed header value
    */
   private function encodeHeader($uri) {
-    $ipnonce = $this->get_nonce(); // Alternatively you could do: get_nonce(8, '-'.get_nonce(8));
+    // Alternatively you could do: get_nonce(8, '-'.get_nonce(8));.
+    $ipnonce = $this->get_nonce();
     $date = date('Y-m-d H:i:s');
 
-    $return = array(
+    $return = [
       'X-AppId: ' . $this->app_id,
       'X-RequestDate: ' . $date,
-      'X-AppVersion: ' . 'EDANInterface-0.10.1'
-    );
+      'X-AppVersion: ' . 'EDANInterface-0.10.1',
+    ];
 
-    // For signed/T2 requests
+    // For signed/T2 requests.
     if ($this->auth_type === self::AUTH_T2_SIGNED) {
       $auth = "{$ipnonce}\n{$uri}\n{$date}\n{$this->edan_key}";
       $content = base64_encode(sha1($auth));
@@ -79,18 +78,20 @@ class EDANInterface {
   }
 
   /**
-   * Perform a curl request
+   * Perform a curl request.
+   *
    * @param array $uri
-   *  An associative array that can contain {q,fq,rows,start}
+   *   An associative array that can contain {q,fq,rows,start}.
    * @param string $service
-   *  The service name you are curling {metadataService,tagService,collectService}
-   * @param bool $POST boolean
-   *  Defaults to false; on true $uri sent CURLOPT_POSTFIELDS
+   *   The service name you are curling {metadataService,tagService,collectService}.
+   * @param bool $POST
+   *   boolean
+   *   Defaults to false; on true $uri sent CURLOPT_POSTFIELDS.
    * @param array $info
-   *  Reference, if passed will be set with the output of curl_getinfo
+   *   Reference, if passed will be set with the output of curl_getinfo.
    *
    * @return string|bool
-   *  Returns the EDAN response, or FALSE if it there was an error.
+   *   Returns the EDAN response, or FALSE if it there was an error.
    */
   public function sendRequest($uri, $service, $POST = FALSE, &$info = []) {
     $ch = curl_init();
@@ -98,9 +99,10 @@ class EDANInterface {
     if ($POST === TRUE) {
       curl_setopt($ch, CURLOPT_URL, $this->server . $service);
       curl_setopt($ch, CURLOPT_POST, 1);
-      //curl_setopt($ch, CURLOPT_POSTFIELDS, $uri);
+      // curl_setopt($ch, CURLOPT_POSTFIELDS, $uri);.
       curl_setopt($ch, CURLOPT_POSTFIELDS, "encodedRequest=" . base64_encode($uri));
-    } else {
+    }
+    else {
       curl_setopt($ch, CURLOPT_URL, $this->server . $service . '?' . $uri);
     }
 
@@ -114,7 +116,8 @@ class EDANInterface {
 
     if ($info['http_code'] == 200) {
       $this->valid_request = TRUE;
-    } else {
+    }
+    else {
       $this->valid_request = FALSE;
     }
 
@@ -150,6 +153,7 @@ class EDANInterface {
       }
     }
 
-    return $prefix.$password;
+    return $prefix . $password;
   }
+
 }
