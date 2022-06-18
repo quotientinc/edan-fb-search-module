@@ -1,255 +1,231 @@
 <?php
+
+namespace Drupal\fb_search\Controller;
+
+use Drupal\Core\Controller\ControllerBase;
+use Drupal\fb_search\EDAN\EDANRequestManager;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\edan\EdanClient\EdanClient;
+use \Drupal\Core\Url;
+
+
 /**
- * @file
- * Contains \Drupal\fb_search\Form\ListSearchForm.
+ * Defines FBController class.
  */
-namespace Drupal\fb_search\Form;
-use Drupal\Core\Form\FormBase;
-use Drupal\Core\Form\FormStateInterface;
-class ListSearchForm extends FormBase {
-  /**
-   * {@inheritdoc}
-   */
-  public function getFormId()
+class ListSearchController extends ControllerBase {
+
+  protected $edanRequestManager;
+
+  public function __construct(EDANRequestManager $edanRequestManager)
   {
-    return 'list_search_form';
+    $this->edanRequestManager = $edanRequestManager;
+  }
+
+  public static function create(ContainerInterface $container)
+  {
+    $edanRequestManager = $container->get('fb_search.request_manager');
+    return new static($container->get('fb_search.request_manager'));
+  }
+
+  private function getURLPrefix()
+  {
+    $query = $this->getQuery();
+
+    $path = Url::fromRoute('<current>')->toString();
+
+    if(empty(trim($query['edan_q'])) || $query['edan_q'] == "*:*")
+    {
+      unset($query['edan_q']);
+    }
+
+    if(empty($query['edan_fq']))
+    {
+      unset($query['edan_fq']);
+    }
+
+    $query_str = http_build_query($query);
+
+    if(!empty(trim($query_str)))
+    {
+      return "$path?$query_str";
+    }
+
+    return "$path?";
+  }
+
+  private function getQuery()
+  {
+    $query = array(
+      'edan_q' => '*:*',
+      'edan_fq' => []
+    );
+
+    if(\Drupal::request()->query->has('edan_q'))
+    {
+      $query['edan_q'] = \Drupal::request()->query->get('edan_q');
+    }
+
+    if(\Drupal::request()->query->has('edan_fq'))
+    {
+      $query['edan_fq'] = \Drupal::request()->query->get('edan_fq');
+    }
+
+    return $query;
+  }
+
+  private function getResponse()
+  {
+    $response = [];
+
+    $response['query'] = $this->getQuery();
+
+    $edan_q = $response['query']['edan_q'];
+    $edan_fq = $response['query']['edan_fq'];
+
+    $page = 0;
+
+    if(\Drupal::request()->query->has('page'))
+    {
+      $page = \Drupal::request()->query->get('page');
+    }
+
+    $fb_config = \Drupal::config('fb_search.settings');
+    $rows = $fb_config->get('display.rows');
+
+    $results = $this->edanRequestManager->getNmaahcFBList($edan_q, $edan_fq, $page, $rows);
+
+    $response['navigation'] = $this->getNavigation($results, $rows, $page);
+
+    $response['results'] = [];
+
+    if(isset($results['rows']))
+    {
+      $response['results'] = $results['rows'];
+    }
+
+    if(isset($results['facets']))
+    {
+      $response['facets'] = $results['facets'];
+    }
+
+    return $response;
+  }
+
+  private function updateForm(&$form)
+  {
+    if(\Drupal::request()->query->has('edan_q') && \Drupal::request()->query->get('edan_q') != '*:*')
+    {
+      $form['keyword']['#value'] = \Drupal::request()->query->get('edan_q');
+    }
+
+    if(\Drupal::request()->query->has('edan_fq'))
+    {
+      $fqs = \Drupal::request()->query->get('edan_fq');
+
+      foreach($fqs as $fq)
+      {
+        $fq_set = explode(":", $fq, 2);
+        $name = $fq_set[0];
+        $value = explode("^", $fq_set[1])[0];
+
+        switch($name)
+        {
+          case "p.nmaahc_fb.pr_name_gn":
+            $form['fname']['#value'] = $value;
+            break;
+          case "p.nmaahc_fb.index.content.transasset.projectid":
+            $form['transcription']['#checked'] = TRUE;
+            break;
+          case "p.nmaahc_fb.pr_name_surn":
+            $form['lname']['#value'] = $value;
+            break;
+          case "p.nmaahc_fb.location":
+            $form['location']['#value'] = $value;
+            break;
+          case "p.nmaahc_fb.index.event_country":
+            $form['country']['#value'] = $value;
+            break;
+          case "p.nmaahc_fb.index.event_state":
+            $form['state']['#value'] = $value;
+            break;
+          case "p.nmaahc_fb.index.event_county":
+            $form['county']['#value'] = $value;
+            break;
+          case "p.nmaahc_fb.index.event_district":
+            $form['district']['#value'] = $value;
+            break;
+          case "p.nmaahc_fb.index.event_city":
+            $form['city']['#value'] = $value;
+            break;
+          case "p.nmaahc_fb.index.pr_occupation":
+            $form['occupation']['#value'] = $value;
+            break;
+          case "p.nmaahc_fb.record_pub_number":
+            $form['rtype']['#value'] = $value;
+            break;
+          case "p.nmaahc_fb.index.search_date":
+            if(strpos($value, "TO") !== false)
+            {
+              $value = str_replace("[", "", $value);
+              $value = str_replace("]", "", $value);
+
+              $dates = explode(" TO ", $value);
+
+              $form['date']['start_date']['#value'] = $dates[0];
+              $form['date']['end_date']['#value'] = $dates[1];
+            }
+            else
+            {
+              $form['single_date']['#value'] = $value;
+            }
+
+            break;
+        }
+      }
+    }
+  }
+
+  private function getNavigation($results, $rows, $page)
+  {
+    $navigation = array(
+      'rows_per_page' => $rows,
+      'record_count' => 0,
+      'page_count' => 0,
+      'current_page' => $page,
+      'url_prefix' => $this->getURLPrefix()
+    );
+
+    if(isset($results['rowCount']))
+    {
+      $navigation['record_count'] = $results['rowCount'];
+      $navigation['page_count'] = ceil($results["rowCount"] / $rows);
+    }
+
+    return $navigation;
   }
 
   /**
-  * {@inheritdoc}
-  */
-  public function buildForm(array $form, FormStateInterface $form_state)
-  {
-    $form['#attributes']['class'][] = 'fb-search-list-search-form';
-
-    $form['keyword'] = array(
-      '#title' => t('Keyword'),
-      '#type' => 'search',
-      '#attributes' => array(
-        'class' => array('form-control fb-search-field fb-search-keyword')
-      )
-    );
-
-    $form['transcription'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Only show records with transcription data.'),
-      '#attributes' => array(
-        'class' => array('fb-search-checkbox fb-search-transcription')
-      )
-    );
-
-    $form['fname'] = array(
-      '#title' => t('First Name'),
-      '#type' => 'textfield',
-      '#attributes' => array(
-        'class' => array('form-control fb-search-field fb-search-fname')
-      )
-    );
-
-    $form['lname'] = array(
-      '#title' => t('Last Name'),
-      '#type' => 'textfield',
-      '#attributes' => array(
-        'class' => array('form-control fb-search-field fb-search-lname')
-      )
-    );
-
-    $form['location'] = array(
-      '#title' => t('Location'),
-      '#type' => 'textfield',
-      '#attributes' => array(
-        'class' => array('form-control fb-search-field fb-search-lname')
-      )
-    );
-
-    $form['state'] = array(
-      '#title' => t('State'),
-      '#type' => 'textfield',
-      '#attributes' => array(
-        'class' => array('form-control fb-search-field fb-search-state')
-      )
-    );
-
-    $form['county'] = array(
-      '#title' => t('County'),
-      '#type' => 'textfield',
-      '#attributes' => array(
-        'class' => array('form-control fb-search-field fb-search-county')
-      )
-    );
-
-    $form['city'] = array(
-      '#title' => t('City'),
-      '#type' => 'textfield',
-      '#attributes' => array(
-        'class' => array('form-control fb-search-field fb-search-city')
-      )
-    );
-
-    $rtypes = array(
-      "M809" => "Asst. Commissioner – Alabama",
-      "M979" => "Asst. Commissioner – Arkansas",
-      "M1055" => "Asst. Commissioner – District of Columbia",
-      "M798" => "Asst. Commissioner – Georgia",
-      "M1027" => "Asst. Commissioner – Louisiana",
-      "M1914" => "Asst. Commissioner – Mississippi, pre-Bureau",
-      "M826" => "Asst. Commissioner – Mississippi",
-      "M843" => "Asst. Commissioner – North Carolina",
-      "M869" => "Asst. Commissioner – South Carolina",
-      "M999" => "Asst. Commissioner – Tennessee",
-      "M821" => "Asst. Commissioner – Texas",
-      "M1048" => "Asst. Commissioner – Virginia",
-      "M810" => "Education – Alabama",
-      "M0980" => "Education – Arkansas",
-      "M1056" => "Education – District of Columbia",
-      "M799" => "Education – Georgia",
-      "M1026" => "Education – Louisiana",
-      "M844" => "Education – North Carolina",
-      "M1000" => "Education – Tennessee",
-      "M822" => "Education – Texas",
-      "M1053" => "Education – Virginia",
-      "M1900" => "Field Office – Alabama",
-      "M1901" => "Field Office – Arkansas",
-      "M1902" => "Field Office – District of Columbia",
-      "M1869" => "Field Office – Florida",
-      "M1903" => "Field Office – Georgia",
-      "M1904" => "Field Office – Kentucky",
-      "M1905" => "Field Office – Louisiana",
-      "M1483" => "Field Office – Louisiana, New Orleans",
-      "M1906" => "Field Office – Maryland/Delaware",
-      "M1907" => "Field Office – Mississippi",
-      "M1908" => "Field Office – Missouri",
-      "M1909" => "Field Office – North Carolina",
-      "M1910" => "Field Office – South Carolina",
-      "M1911" => "Field Office – Tennessee",
-      "M1912" => "Field Office – Texas",
-      "M1913" => "Field Office – Virginia",
-      "M742" => "Headquarters – Records",
-      "M752" => "Headquarters – Registers & Letters",
-      "M803" => "Headquarters – Education",
-      "M1875" => "Headquarters – Marriage ",
-      "M2029" => "Miscellaneous – Adjutant General",
-      "M816" => "Miscellaneous – Freedmen’s Savings and Trust",
-    );
-
-    $form['rtype'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Select Publication'),
-      '#options' => $rtypes,
-      "#empty_option" => $this->t('All Publications'),
-      "#empty_value" => "",
-      '#attributes' => array(
-        'class' => array('fb-search-field fb-search-rtype')
-      )
-    ];
-
-    $form['single_date'] = [
-      '#type' => 'date',
-      '#title' => $this->t('Single Date'),
-    ];
-
-    $form['date'] = [
-      '#type' => 'fieldset',
-      '#title' => 'Date Range',
-      '#attributes' => array(
-        'class' => array("fb-search-fieldset fb-search-dates")
-      )
-    ];
-
-    $form['date']['start_date'] = [
-      '#type' => 'date',
-      '#title' => $this->t('Start Date'),
-    ];
-
-    $form['date']['end_date'] = [
-      '#type' => 'date',
-      '#title' => $this->t('End Date'),
-    ];
-
-    $form['actions']['#type'] = 'actions';
-    $form['actions']['submit'] = array(
-     '#type' => 'submit',
-     '#value' => $this->t('Search'),
-     '#button_type' => 'primary'
-    );
-
-    return $form;
-  }
-
-  /**
-   * {@inheritdoc}
+   * Display the markup.
+   *
+   * @return array
+   *   Return markup array.
    */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
-    $values = $form_state->getValues();
+  public function content()
+  {
+    $form = \Drupal::formBuilder()->getForm('Drupal\fb_search\Form\ListSearchForm');
 
-    $q = "*";
-    $query = [];
+    $this->updateForm($form);
 
-    $fqs = [];
+    $response = $this->getResponse();
 
-    if(!empty($values['keyword']))
-    {
-      $q = $values['keyword'];
-      $query['edan_q'] = $q;
-    }
+    //$response['facets'] = json_encode($this->edanRequestManager->getFacets($response['query']['edan_q'], $response['query']['edan_fq']), JSON_PRETTY_PRINT);
 
-    if(!empty($values['transcription']) && $values['transcription'])
-    {
-      $fqs[] = "p.nmaahc_fb.index.content.transasset.projectid:*";
-    }
+    \Drupal::service('page_cache_kill_switch')->trigger();
 
-    if(!empty($values['fname']))
-    {
-      $fqs[] = "p.nmaahc_fb.pr_name_gn:" . $values['fname'];
-    }
-
-    if(!empty($values['lname']))
-    {
-      $fqs[] = "p.nmaahc_fb.pr_name_surn:" . $values['lname'];
-    }
-
-    if(!empty($values['location']))
-    {
-      $fqs[] = "p.nmaahc_fb.location:" . $values['location'];
-    }
-
-    if(!empty($values['state']))
-    {
-      $fqs[] = "p.nmaahc_fb.index.event_state:" . $values['state'];
-    }
-
-    if(!empty($values['county']))
-    {
-      $fqs[] = "p.nmaahc_fb.index.event_county:" . $values['county'];
-    }
-
-    if(!empty($values['city']))
-    {
-      $fqs[] = "p.nmaahc_fb.index.event_city:" . $values['city'];
-    }
-
-    if(!empty($values['rtype']))
-    {
-      $fqs[] = "p.nmaahc_fb.record_pub_number:" . $values['rtype'];
-    }
-
-    $date_set = FALSE;
-
-    if(!empty($values['single_date']))
-    {
-      $date_set = TRUE;
-      $fqs[] = "p.nmaahc_fb.index.search_date:" . $values['single_date'];
-    }
-
-    if(!$date_set && !empty($values['start_date']) && !empty($values['end_date']))
-    {
-      $fqs[] = "p.nmaahc_fb.index.search_date:[" . $values['start_date'] . " TO " . $values['end_date'] . "]";
-    }
-
-    $query['edan_fq'] = $fqs;
-
-    $form_state->setRedirect('fb_search.search', [], ['query' => $query]);
-
-    return;
+    return [
+      '#theme' => 'search-results',
+      '#response' => $response,
+      '#form' => $form,
+    ];
   }
 }

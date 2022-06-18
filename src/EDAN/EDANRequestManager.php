@@ -32,7 +32,7 @@ class EDANRequestManager
     return $parsed_fqs;
   }
 
-  private function getColumnFieldMapping($fqs)
+  private function getColumnFieldMapping($fqs, $q=NULL)
   {
     $fqs = $this->parseFqsArray($fqs);
     $mapping = [
@@ -41,6 +41,11 @@ class EDANRequestManager
       'date' => [],
       'misc' => []
     ];
+
+    if($q)
+    {
+      $mapping['keyword'] = [['field' => 'keyword', 'value' => $q]];
+    }
 
     foreach($fqs as $key => $value)
     {
@@ -278,7 +283,7 @@ class EDANRequestManager
       $match = $match && $lmatch;
     }
 
-    $row['location_matched'] = $match;
+    //$row['location_matched'] = $match;
 
     //$row['location']['location_match_set'] = $location_match_set;
 
@@ -293,7 +298,50 @@ class EDANRequestManager
     return $match;
   }
 
-  private function getSearchMatchCounts(&$results, $fqs)
+  private function matchKeyword(&$row, $keyword)
+  {
+    $match = FALSE;
+
+    $keyword = str_replace("+", " ", $keyword);
+    $keyword_set = explode(" ", $keyword);
+
+    foreach($row as $column => $value)
+    {
+      if(gettype($value) == "string")
+      {
+        continue;
+      }
+
+      for($i = 0; $i < count($value); $i++)
+      {
+        $v = $value[$i];
+        $content = $value[$i]['content'];
+        $content = explode(" ", $value[$i]['content']);
+
+        foreach($keyword_set as $key)
+        {
+          /*foreach($content as $c)
+          {
+              if($key == $c)
+              {
+                $match = TRUE;
+                $row[$column][$i]['matched'] = TRUE;
+              }
+          }*/
+
+          if(strpos($v['content'], trim($key)) !== false)
+          {
+            $match = TRUE;
+            $row[$column][$i]['matched'] = TRUE;
+          }
+        }
+      }
+    }
+
+    return $match;
+  }
+
+  private function getSearchMatchCounts(&$results, $fqs, $q)
   {
     $rows = $results['data']['rows'];
 
@@ -307,11 +355,10 @@ class EDANRequestManager
       }
 
       $indexed_rows = $row['content']['indexed_rows'];
-      $mapping = $this->getColumnFieldMapping($fqs);
+      $mapping = $this->getColumnFieldMapping($fqs, $q);
 
 
       $results['data']['rows'][$i]['content']['matching_row_count'] = 0;
-      $results['data']['rows'][$i]['content']['date_match'] = [];
 
       foreach($indexed_rows as $idx)
       {
@@ -329,7 +376,15 @@ class EDANRequestManager
             $value = $field['value'];
             $name = $field['field'];
 
-            if($column == 'date')
+            if($column == 'keyword')
+            {
+              if($this->matchKeyword($idx, $value))
+              {
+                $row_matches = TRUE;
+                break;
+              }
+            }
+            elseif($column == 'date')
             {
               if($this->matchDateField($idx, $value))
               {
@@ -372,14 +427,25 @@ class EDANRequestManager
     }
   }
 
-  private function getMatchedRows(&$results, $fqs)
+  private function getMatchedRows(&$results, $fqs, $q)
   {
     $indexed_rows = $results['data']['content']['indexed_rows'];
 
     $results['data']['content']['matched_rows'] = [];
     $results['data']['content']['unmatched_rows'] = [];
 
-    $mapping = $this->getColumnFieldMapping($fqs);
+    if($q)
+    {
+      $results['data']['content']['edan_q'] = $q;
+    }
+    else
+    {
+      $results['data']['content']['edan_q'] = "NOT PRESENT";
+    }
+
+    $mapping = $this->getColumnFieldMapping($fqs, $q);
+
+    $results['data']['mapping'] = $mapping;
 
     foreach($indexed_rows as $row)
     {
@@ -392,7 +458,11 @@ class EDANRequestManager
           $name = $field['field'];
           $value = $field['value'];
 
-          if($column == 'date')
+          if($column == 'keyword' && $this->matchKeyword($row, $value))
+          {
+            $row_matches = TRUE;
+          }
+          elseif($column == 'date')
           {
             if($this->matchDateField($row, $value))
             {
@@ -474,19 +544,19 @@ class EDANRequestManager
     $results = $this->connector->runParamQuery($params);
     if(isset($results['data']['rows']))
     {
-      $this->getSearchMatchCounts($results, $fqs);
+      $this->getSearchMatchCounts($results, $fqs, $q);
     }
 
     return $results["data"];
   }
 
-  public function getObjectByID($id, $fqs=[])
+  public function getObjectByID($id, $fqs=[], $q="*:*")
   {
     $results = $this->connector->getRecord($id, "id", "nmaahc_fb");
 
-    if(!empty($fqs) && isset($results['data']['content']))
+    if(isset($results['data']['content']))
     {
-      $this->getMatchedRows($results, $fqs);
+      $this->getMatchedRows($results, $fqs, $q);
     }
 
     return $results["data"];
